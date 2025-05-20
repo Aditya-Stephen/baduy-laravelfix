@@ -13,9 +13,21 @@ Route::get('/', function () {
 // Middleware untuk halaman yang membutuhkan login
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
-    // Routing ke halaman artikel
-    Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel'); // Menampilkan daftar artikel
-    Route::get('/artikel/{id}', [ArtikelController::class, 'show'])->name('artikel.show'); // Menampilkan detail artikel
+// Routing Artikel
+Route::controller(ArtikelController::class)->group(function () {
+    // Menampilkan daftar artikel
+    Route::get('/artikel', 'index')->name('artikel');
+    
+    // Menampilkan form tambah artikel
+    Route::get('/artikel/create', 'create')->name('artikel.create');
+    
+    // Menyimpan artikel baru
+    Route::post('/artikel', 'store')->name('artikel.store');
+    
+    // Menampilkan detail artikel
+    Route::get('/artikel/{id}', 'show')->name('artikel.show');
+});
+
 
     // Routing ke halaman produk (Marketplace)
     Route::get('/marketplace', function () {
