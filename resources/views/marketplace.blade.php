@@ -7,11 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Baduy Product</title>
     <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
 </head>
 
@@ -22,7 +20,7 @@
                 <!-- Logo (kiri) -->
                 <div class="flex-shrink-0">
                     <a href="{{ url('/') }}" class="flex items-center">
-                        <img src="images/logobadui1.webp" class="h-14 w-auto object-contain" alt="Baduy Logo">
+                        <img src="{{ asset('images/logobadui1.webp') }}" class="h-14 w-auto object-contain" alt="Baduy Logo">
                     </a>
                 </div>
 
@@ -52,6 +50,14 @@
                             </svg>
                         </button>
                         <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                            <!-- Admin link if user is admin -->
+                            @if(Auth::user()->is_admin ?? false)
+                            <a href="{{ url('/admin') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                Admin Dashboard
+                            </a>
+                            <hr class="my-1 border-gray-200">
+                            @endif
+                            
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
@@ -67,64 +73,30 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container mx-auto">
         <section class="text-center py-12 bg-gray-800">
             <h1 class="text-4xl font-bold text-orange-400">Produk Suku Baduy</h1>
             <p class="text-gray-300 mt-2">Produk khas Suku Baduy yang dibuat secara tradisional dengan bahan alami.</p>
         </section>
 
+        <!-- Grid produk dinamis -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+            @forelse($products as $product)
             <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/kain3.jpg" alt="Kain Tenun Baduy" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Kain Tenun Baduy</h2>
-                <p class="text-gray-300">Kain tenun khas yang dibuat secara tradisional oleh masyarakat Baduy.</p>
+                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded-lg w-full h-40 object-cover">
+                <h2 class="text-lg font-semibold mt-4">{{ $product->name }}</h2>
+                <p class="text-gray-300">{{ Str::limit($product->description, 100) }}</p>
+                <div class="mt-4 flex justify-between items-center">
+                    <span class="text-yellow-400 font-bold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Detail</a>
+                </div>
             </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/tasbadui.jpg" alt="Tas Anyaman Bambu" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Tas Anyaman Bambu</h2>
-                <p class="text-gray-300">Kerajinan tangan berbahan dasar bambu dengan desain khas.</p>
+            @empty
+            <div class="col-span-3 text-center py-8">
+                <p>Belum ada produk tersedia.</p>
             </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/aksesorisbadui.jpg" alt="Aksesoris Tradisional" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Aksesoris Tradisional</h2>
-                <p class="text-gray-300">Kalung dan gelang khas yang melambangkan identitas budaya Baduy.</p>
-            </div>
-        </section>
-
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/kain4.jpg" alt="Kain Tenun Baduy" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Sarung Baduy</h2>
-                <p class="text-gray-300">Kain sarung dengan motif unik yang sering dipakai oleh masyarakat Baduy.</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/topibadui.webp" alt="Tas Anyaman Bambu" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Topi Baduy (Koja)</h2>
-                <p class="text-gray-300">Penutup kepala khas yang sering digunakan oleh masyarakat Baduy Luar.</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/kerajinanbadui.jpeg" alt="Aksesoris Tradisional" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Kerajinan Kayu</h2>
-                <p class="text-gray-300">Berbagai benda dari kayu seperti sendok, piring, atau ukiran dengan sentuhan khas.</p>
-            </div>
-        </section>
-
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/obatherbalbadui.jpg" alt="Kain Tenun Baduy" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Obat Herbal Tradisional</h2>
-                <p class="text-gray-300"> Ramuan obat dari tumbuhan hutan yang dipercaya memiliki berbagai khasiat.</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/gulabadui.jpg" alt="Tas Anyaman Bambu" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Gula Aren Badui</h2>
-                <p class="text-gray-300">Kerajinan tangan berbahan dasar bambu dengan desain khas.</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                <img src="images/madubadui.jpeg" alt="Aksesoris Tradisional" class="rounded-lg w-full h-40 object-cover">
-                <h2 class="text-lg font-semibold mt-4">Madu Hutan Baduy</h2>
-                <p class="text-gray-300">Madu alami yang dihasilkan dari lebah liar di hutan sekitar pemukiman Baduy.</p>
-            </div>
+            @endforelse
         </section>
     </div>
 
@@ -182,15 +154,16 @@
                 menu.classList.toggle('flex-col');
                 menu.classList.toggle('absolute');
                 menu.classList.toggle('top-16');
-                menu.classList.toggle('right-0'); // Ubah right-4 menjadi left-0
-                menu.classList.toggle('text-right'); // Tambahkan text-left untuk rata kiri
+                menu.classList.toggle('left-0');
+                menu.classList.toggle('w-full');
+                menu.classList.toggle('text-left');
                 menu.classList.toggle('bg-gray-800');
                 menu.classList.toggle('p-4');
                 menu.classList.toggle('rounded');
                 menu.classList.toggle('shadow-lg');
                 menu.classList.toggle('z-10');
 
-                // Tambahkan spacing untuk item menu mobile
+                // Styling untuk item menu
                 const menuItems = menu.querySelectorAll('a');
                 menuItems.forEach(item => {
                     item.classList.toggle('block');
@@ -200,8 +173,7 @@
             });
         });
     </script>
-    <!-- jika pake vite -->
+    
     @vite(['resources/js/app.js'])
 </body>
-
 </html>

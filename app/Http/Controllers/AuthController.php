@@ -52,15 +52,26 @@ class AuthController extends Controller
             // Login setelah registrasi
             Auth::login($user);
 
-            // Redirect ke homepage setelah registrasi
-            return redirect()->route('homepage')->with('success', 'Registration successful!');
+            // Cek apakah user yang baru register adalah admin
+            if ($user->email === 'admin@gmail.com') {
+                return redirect()->route('admin.index')->with('success', 'Registration successful!');
+            } else {
+                // Redirect ke homepage setelah registrasi
+                return redirect()->route('homepage')->with('success', 'Registration successful!');
+            }
         } else {
             // Jika tidak ada name, berarti login
             $credentials = $request->only('email', 'password');
 
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
-                return redirect()->route('homepage')->with('success', 'Login successful!');
+                
+                // Cek apakah user yang login adalah admin
+                if (Auth::user()->email === 'admin@gmail.com') {
+                    return redirect()->route('admin.index')->with('success', 'Login successful!');
+                } else {
+                    return redirect()->route('homepage')->with('success', 'Login successful!');
+                }
             }
 
             // Jika login gagal, kembali ke form login dengan error

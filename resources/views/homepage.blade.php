@@ -17,8 +17,9 @@
 
   <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
 
 <body class="bg-gray-900">
@@ -28,7 +29,7 @@
       <!-- Logo (kiri) -->
       <div class="flex-shrink-0">
         <a href="{{ url('/') }}" class="flex items-center">
-          <img src="images/logobadui1.webp" class="h-14 w-auto object-contain" alt="Baduy Logo">
+          <img src="{{ asset('images/logobadui1.webp') }}" class="h-14 w-auto object-contain" alt="Baduy Logo">
         </a>
       </div>
 
@@ -58,6 +59,13 @@
               </svg>
             </button>
             <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+              <!-- Admin link if user is admin -->
+              @if(Auth::user()->is_admin ?? false)
+              <a href="{{ url('/admin') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                Admin Dashboard
+              </a>
+              <hr class="my-1 border-gray-200">
+              @endif
               <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
@@ -75,100 +83,91 @@
 </header>
 
   <!-- <div class="slider-area">
-		<div class="slider-wrapper owl-carousel">
-			<div class="slider-item home-one-slider-otem slider-item-four slider-bg-one">
-				<div class="container">
-					<div class="row">
-						<div class="slider-content-area">
-							<div class="slide-text">
-								<h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
-								<h2>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eius soluta quo, error alias quod facere suscipit deleniti ullam aperiam laudantium ad quis iusto in quae, molestias consectetur eligendi. Sed, delectus. </h2>
-								<div class="slider-content-btn">
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="slider-item text-center home-one-slider-otem slider-item-four slider-bg-two">
-				<div class="container">
-					<div class="row">
-						<div class="slider-content-area">
-							<div class="slide-text">
-								<h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
-								<h2>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sapiente rem nisi facilis pariatur. Culpa, nihil voluptatibus! Totam accusantium, excepturi vel illo amet ex, distinctio corporis autem itaque sapiente facere qui! </h2>
-								<div class="slider-content-btn">
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="slider-item home-one-slider-otem slider-item-four slider-bg-three">
-				<div class="container">
-					<div class="row">
-						<div class="slider-content-area">
-							<div class="slide-text">
-								<h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
-								<h2>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibus tempora quasi, reiciendis obcaecati illum quas vero hic est iste, assumenda similique enim beatae adipisci, rerum ut incidunt corporis numquam vitae!</h2>
-								<div class="slider-content-btn">
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
-									<a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div> 
-
-    <div class="relative max-w-7xl mx-auto px-4 py-12">
-        <!-- Slides wrapper -->
-  <div id="carousel" class="overflow-hidden relative">
-    <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0%)">
-
-      <!-- Slide 1 -->
-      <div class="min-w-full flex-shrink-0 p-4">
-        <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
-          <img src="suasana1.jpg" alt="Slide 1" class="w-full h-64 object-cover">
-          <h2 class="mt-4 text-xl font-bold text-yellow-500">Slide 1: artikel</h2>
-          <p class="mb-4 px-4">Konten.</p>
+        <div class="slider-wrapper owl-carousel">
+            <div class="slider-item home-one-slider-otem slider-item-four slider-bg-one">
+                <div class="container">
+                    <div class="row">
+                        <div class="slider-content-area">
+                            <div class="slide-text">
+                                <h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
+                                <h2>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eius soluta quo, error alias quod facere suscipit deleniti ullam aperiam laudantium ad quis iusto in quae, molestias consectetur eligendi. Sed, delectus. </h2>
+                                <div class="slider-content-btn">
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-item text-center home-one-slider-otem slider-item-four slider-bg-two">
+                <div class="container">
+                    <div class="row">
+                        <div class="slider-content-area">
+                            <div class="slide-text">
+                                <h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
+                                <h2>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sapiente rem nisi facilis pariatur. Culpa, nihil voluptatibus! Totam accusantium, excepturi vel illo amet ex, distinctio corporis autem itaque sapiente facere qui! </h2>
+                                <div class="slider-content-btn">
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-item home-one-slider-otem slider-item-four slider-bg-three">
+                <div class="container">
+                    <div class="row">
+                        <div class="slider-content-area">
+                            <div class="slide-text">
+                                <h1 class="homepage-three-title">Konten <span>Article</span> Slider</h1>
+                                <h2>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibus tempora quasi, reiciendis obcaecati illum quas vero hic est iste, assumenda similique enim beatae adipisci, rerum ut incidunt corporis numquam vitae!</h2>
+                                <div class="slider-content-btn">
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Read More</a>
+                                    <a class="button btn btn-light btn-radius btn-brd" href="#">Contact</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div> -->
+
+  <div class="relative max-w-7xl mx-auto px-4 py-12">
+    <!-- Carousel dinamis -->
+    <div id="carousel" class="overflow-hidden relative">
+      <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0%)">
+        @forelse($carousels as $carousel)
+        <div class="min-w-full flex-shrink-0 p-4">
+          <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
+            <img src="{{ asset($carousel->image) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+            <h2 class="mt-4 text-xl font-bold text-yellow-500">{{ $carousel->title }}</h2>
+            <p class="mb-4 px-4 text-gray-200">{{ $carousel->description }}</p>
+          </div>
+        </div>
+        @empty
+        <div class="min-w-full flex-shrink-0 p-4">
+          <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
+            <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+              <p class="text-gray-300">Tidak ada slide</p>
+            </div>
+            <h2 class="mt-4 text-xl font-bold text-yellow-500">Sample Slide</h2>
+            <p class="mb-4 px-4 text-gray-200">Tambahkan slide di dashboard admin.</p>
+          </div>
+        </div>
+        @endforelse
       </div>
 
-      <!-- Slide 2 -->
-      <div class="min-w-full flex-shrink-0 p-4">
-        <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
-          <img src="suasana1.jpg" alt="Slide 2" class="w-full h-64 object-cover">
-          <h2 class="mt-4 text-xl font-bold text-yellow-500">Slide 2: artikel</h2>
-          <p class="mb-4 px-4">Konten.</p>
-        </div>
-      </div>
-
-      <!-- Slide 3 -->
-      <div class="min-w-full flex-shrink-0 p-4">
-        <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
-          <img src="suasana1.jpg" alt="Slide 3" class="w-full h-64 object-cover">
-          <h2 class="mt-4 text-xl font-bold text-yellow-500">Slide 3: artikel</h2>
-          <p class="mb-4 px-4">Konten.</p>
-        </div>
-      </div>
-
+      <!-- Buttons -->
+      <button id="prev" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
+        &#8592;
+      </button>
+      <button id="next" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
+        &#8594;
+      </button>
     </div>
-
-    <!-- Buttons -->
-    <button id="prev" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-      &#8592;
-    </button>
-    <button id="next" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-      &#8594;
-    </button>
-  </div>
   </div>
 
   <section class="max-w-7xl mx-auto px-4 py-12">
@@ -185,7 +184,7 @@
         <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
       </div>
       <div>
-        <img src="suasana1.jpg" alt="Baduy Group" class="rounded-lg shadow-md">
+        <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
       </div>
     </div>
   </section>
@@ -195,7 +194,7 @@
   <section class="max-w-7xl mx-auto px-4 pb-12">
     <div class="grid md:grid-cols-2 gap-8 items-center">
       <div>
-        <img src="suasana1.jpg" alt="Baduy Village" class="rounded-lg shadow-md">
+        <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
       </div>
       <div>
         <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
@@ -211,13 +210,13 @@
     </div>
   </section>
 
-  <section class="bg-cover bg-center py-16" style="background-image: url('suasana1.jpg')">
+  <section class="bg-cover bg-center py-16" style="background-image: url('{{ asset('images/suasana1.jpg') }}')">
     <div class="max-w-7xl mx-auto px-4">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
 
         <!-- Item -->
         <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="suasana1.jpg" alt="Kain Tenun" class="w-full h-48 object-cover">
+          <img src="{{ asset('images/suasana1.jpg') }}" alt="Kain Tenun" class="w-full h-48 object-cover">
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
               <div class="w-3 h-3 border-2 border-white"></div>
@@ -230,7 +229,7 @@
 
         <!-- Item -->
         <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="suasana1.jpg" alt="Madu Badui" class="w-full h-48 object-cover">
+          <img src="{{ asset('images/suasana1.jpg') }}" alt="Madu Badui" class="w-full h-48 object-cover">
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
               <div class="w-3 h-3 border-2 border-white"></div>
@@ -243,7 +242,7 @@
 
         <!-- Item -->
         <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="suasana1.jpg" alt="Obat Herbal" class="w-full h-48 object-cover">
+          <img src="{{ asset('images/suasana1.jpg') }}" alt="Obat Herbal" class="w-full h-48 object-cover">
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
               <div class="w-3 h-3 border-2 border-white"></div>
@@ -256,7 +255,7 @@
 
         <!-- Item -->
         <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="suasana1.jpg" alt="Topi Suku Badui" class="w-full h-48 object-cover">
+          <img src="{{ asset('images/suasana1.jpg') }}" alt="Topi Suku Badui" class="w-full h-48 object-cover">
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
               <div class="w-3 h-3 border-2 border-white"></div>
@@ -318,35 +317,63 @@
   <!-- JS FILES -->
   <script>
   document.addEventListener('DOMContentLoaded', function() {
-  const button = document.getElementById('mobile-menu-button');
-  const menu = document.getElementById('navbar-menu');
-  
-  button.addEventListener('click', function() {
-    menu.classList.toggle('hidden');
-    menu.classList.toggle('flex');
-    menu.classList.toggle('flex-col');
-    menu.classList.toggle('absolute');
-    menu.classList.toggle('top-16');
-    menu.classList.toggle('right-0'); // Ubah right-4 menjadi left-0
-    menu.classList.toggle('text-right'); // Tambahkan text-left untuk rata kiri
-    menu.classList.toggle('bg-gray-800');
-    menu.classList.toggle('p-4');
-    menu.classList.toggle('rounded');
-    menu.classList.toggle('shadow-lg');
-    menu.classList.toggle('z-10');
+    const button = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('navbar-menu');
     
-    // Tambahkan spacing untuk item menu mobile
-    const menuItems = menu.querySelectorAll('a');
-    menuItems.forEach(item => {
-      item.classList.toggle('block');
-      item.classList.toggle('mb-2');
-      item.classList.toggle('pl-2');
+    button.addEventListener('click', function() {
+      menu.classList.toggle('hidden');
+      menu.classList.toggle('flex');
+      menu.classList.toggle('flex-col');
+      menu.classList.toggle('absolute');
+      menu.classList.toggle('top-16');
+      menu.classList.toggle('right-0'); 
+      menu.classList.toggle('text-right');
+      menu.classList.toggle('bg-gray-800');
+      menu.classList.toggle('p-4');
+      menu.classList.toggle('rounded');
+      menu.classList.toggle('shadow-lg');
+      menu.classList.toggle('z-10');
+      
+      // Tambahkan spacing untuk item menu mobile
+      const menuItems = menu.querySelectorAll('a');
+      menuItems.forEach(item => {
+        item.classList.toggle('block');
+        item.classList.toggle('mb-2');
+        item.classList.toggle('pl-2');
+      });
     });
+    
+    // Carousel functionality
+    const slides = document.getElementById('carousel-slides');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const slideCount = slides.children.length;
+    let currentSlide = 0;
+    
+    function updateSlidePosition() {
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+    
+    if (prevBtn && nextBtn && slideCount > 0) {
+      prevBtn.addEventListener('click', function() {
+        currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+        updateSlidePosition();
+      });
+      
+      nextBtn.addEventListener('click', function() {
+        currentSlide = (currentSlide + 1) % slideCount;
+        updateSlidePosition();
+      });
+      
+      // Auto-advance slides every 5 seconds
+      setInterval(function() {
+        currentSlide = (currentSlide + 1) % slideCount;
+        updateSlidePosition();
+      }, 5000);
+    }
   });
-});
-</script>
+  </script>
 
-  <!-- jika pake vite -->
   @vite(['resources/js/app.js'])
 
 </body>
