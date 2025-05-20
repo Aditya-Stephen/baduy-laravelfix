@@ -8,47 +8,62 @@
     <title>Baduy Product</title>
     <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
 </head>
 
 <body class="bg-gray-900 text-white">
-    <header class="header header_style_01">
-        <nav class="megamenu navbar navbar-default">
-            <div class="container-fluid">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html"><img src="images/logobadui1.webp" class="gambar-kecil" alt="image"></a>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="{{ url('/') }}">Home</a></li>
-                    <li><a href="{{ url('/aboutUs') }}">About Us</a></li>
-                    <li><a href="{{ url('/marketplace') }}">Product</a></li>
-                    <li><a href="{{ url('/artikel') }}">Article</a></li>
-                    <!-- Menampilkan nama pengguna setelah login, atau tombol login jika belum login -->
+    <header class="header header_style_01 bg-gray-800 py-2">
+        <nav class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo (kiri) -->
+                <div class="flex-shrink-0">
+                    <a href="{{ url('/') }}" class="flex items-center">
+                        <img src="images/logobadui1.webp" class="h-14 w-auto object-contain" alt="Baduy Logo">
+                    </a>
+                </div>
+
+                <!-- Hamburger menu untuk mobile -->
+                <div class="md:hidden">
+                    <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Menu navigasi (kanan) -->
+                <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
+                    <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
+                    <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
+                    <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
+                    <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
+
+                    <!-- Login/Logout -->
                     @auth
-                    <!-- Menampilkan nama pengguna yang login dengan menu dropdown -->
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            {{ Auth::user()->name }} <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="btn btn-link" style="text-decoration: none; color: inherit;">
-                                        Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
+                            {{ Auth::user()->name }}
+                            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                     @else
-                    <!-- Jika belum login, tampilkan tombol login -->
-                    <li><a href="{{ route('login') }}">Login</a></li>
+                    <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
                     @endauth
-                </ul>
+                </div>
             </div>
         </nav>
     </header>
@@ -155,13 +170,36 @@
         </div>
     </footer>
 
-    <!-- ALL JS FILES -->
-    <script src="{{ asset('js/all.js') }}"></script>
-    <!-- ALL PLUGINS -->
-    <script src="{{ asset('js/custom.js') }}"></script>
-    <script src="{{ asset('js/portfolio.js') }}"></script>
-    <script src="{{ asset('js/hoverdir.js') }}"></script>
-    <script src="{{ asset('js/modernizer.js') }}"></script>
+    <!-- JS FILES -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('navbar-menu');
+
+            button.addEventListener('click', function() {
+                menu.classList.toggle('hidden');
+                menu.classList.toggle('flex');
+                menu.classList.toggle('flex-col');
+                menu.classList.toggle('absolute');
+                menu.classList.toggle('top-16');
+                menu.classList.toggle('right-0'); // Ubah right-4 menjadi left-0
+                menu.classList.toggle('text-right'); // Tambahkan text-left untuk rata kiri
+                menu.classList.toggle('bg-gray-800');
+                menu.classList.toggle('p-4');
+                menu.classList.toggle('rounded');
+                menu.classList.toggle('shadow-lg');
+                menu.classList.toggle('z-10');
+
+                // Tambahkan spacing untuk item menu mobile
+                const menuItems = menu.querySelectorAll('a');
+                menuItems.forEach(item => {
+                    item.classList.toggle('block');
+                    item.classList.toggle('mb-2');
+                    item.classList.toggle('pl-2');
+                });
+            });
+        });
+    </script>
     <!-- jika pake vite -->
     @vite(['resources/js/app.js'])
 </body>

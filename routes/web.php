@@ -11,7 +11,7 @@ Route::get('/', function () {
 })->name('homepage');
 
 // Middleware untuk halaman yang membutuhkan login
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // Routing ke halaman artikel
     Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel'); // Menampilkan daftar artikel
@@ -37,6 +37,9 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register')->middleware('guest');
+
+// Rute submit form login/register
+Route::post('/auth/submit', [AuthController::class, 'handleAuthSubmit'])->name('auth.submit');
 
 // Rute logout
 Route::post('/logout', function () {
