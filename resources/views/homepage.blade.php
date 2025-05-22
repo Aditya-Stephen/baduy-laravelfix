@@ -15,42 +15,38 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-gray-900">
- <header class="header header_style_01 bg-gray-800 py-2">
-  <nav class="container mx-auto px-4">
-    <div class="flex items-center justify-between">
-      <!-- Logo (kiri) -->
-      <div class="flex-shrink-0">
-        <a href="{{ url('/') }}" class="flex items-center">
-          <img src="{{ asset('images/logobadui1.webp') }}" class="h-14 w-auto object-contain" alt="Baduy Logo">
-        </a>
-      </div>
+  <header class="header header_style_01 bg-gray-800 py-2">
+    <nav class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <!-- Logo (kiri) -->
+        <div class="flex-shrink-0">
+          <a href="{{ url('/') }}" class="flex items-center">
+            <img src="{{ asset('images/logobadui1.webp') }}" class="h-14 w-auto object-contain" alt="Baduy Logo">
+          </a>
+        </div>
 
-      <!-- Hamburger menu untuk mobile -->
-      <div class="md:hidden">
-        <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
-          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-      </div>
+        <!-- Hamburger menu untuk mobile -->
+        <div class="md:hidden">
+          <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
 
-      <!-- Menu navigasi (kanan) -->
-      <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-        <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-        <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-        <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-        <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
-        
-        <!-- Login/Logout -->
-        @auth
+        <!-- Menu navigasi (kanan) -->
+        <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
+          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
+          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
+          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
+
+          <!-- Login/Logout -->
+          @auth
           <div class="relative" x-data="{ open: false }">
             <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
               {{ Auth::user()->name }}
@@ -74,13 +70,13 @@
               </form>
             </div>
           </div>
-        @else
+          @else
           <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
-        @endauth
+          @endauth
+        </div>
       </div>
-    </div>
-  </nav>
-</header>
+    </nav>
+  </header>
 
   <!-- <div class="slider-area">
         <div class="slider-wrapper owl-carousel">
@@ -151,10 +147,10 @@
         <div class="min-w-full flex-shrink-0 p-4">
           <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
             <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
-              <p class="text-gray-300">Tidak ada slide</p>
+              <p class="text-gray-300"></p>
             </div>
-            <h2 class="mt-4 text-xl font-bold text-yellow-500">Sample Slide</h2>
-            <p class="mb-4 px-4 text-gray-200">Tambahkan slide di dashboard admin.</p>
+            <h2 class="mt-4 text-xl font-bold text-yellow-500">Suku Baduy</h2>
+            <p class="mb-4 px-4 text-gray-200"></p>
           </div>
         </div>
         @endforelse
@@ -210,62 +206,35 @@
     </div>
   </section>
 
-  <section class="bg-cover bg-center py-16" style="background-image: url('{{ asset('images/suasana1.jpg') }}')">
+  <section class="bg-cover bg-center py-16 bg-[url('{{asset('images/suasana1.jpg')}}')]">
     <div class="max-w-7xl mx-auto px-4">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-        <!-- Item -->
+        @forelse($products as $product)
+        <!-- Dynamic Product Item -->
         <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Kain Tenun" class="w-full h-48 object-cover">
+          <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
           <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
               <div class="w-3 h-3 border-2 border-white"></div>
             </div>
           </div>
           <div class="bg-blue-600 text-center py-2">
-            <p class="text-yellow-400 font-bold">Kain Tenun</p>
+            <p class="text-yellow-400 font-bold">{{ $product->name }}</p>
           </div>
         </div>
-
-        <!-- Item -->
-        <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Madu Badui" class="w-full h-48 object-cover">
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
-              <div class="w-3 h-3 border-2 border-white"></div>
-            </div>
-          </div>
-          <div class="bg-blue-600 text-center py-2">
-            <p class="text-yellow-400 font-bold">Madu Badui</p>
-          </div>
+        @empty
+        <!-- Fallback for no products -->
+        <div class="col-span-4 text-center py-8">
+          <p class="text-white text-lg font-bold">No products available at the moment.</p>
         </div>
+        @endforelse
+      </div>
 
-        <!-- Item -->
-        <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Obat Herbal" class="w-full h-48 object-cover">
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
-              <div class="w-3 h-3 border-2 border-white"></div>
-            </div>
-          </div>
-          <div class="bg-blue-600 text-center py-2">
-            <p class="text-yellow-400 font-bold">Obat Herbal</p>
-          </div>
-        </div>
-
-        <!-- Item -->
-        <div class="relative bg-white shadow rounded overflow-hidden">
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Topi Suku Badui" class="w-full h-48 object-cover">
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
-              <div class="w-3 h-3 border-2 border-white"></div>
-            </div>
-          </div>
-          <div class="bg-blue-600 text-center py-2">
-            <p class="text-yellow-400 font-bold">Topi Suku Badui</p>
-          </div>
-        </div>
-
+      <!-- View All Products Button -->
+      <div class="text-center mt-8">
+        <a href="{{ url('/marketplace') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded transition">
+          View All Products
+        </a>
       </div>
     </div>
   </section>
@@ -316,62 +285,62 @@
 
   <!-- JS FILES -->
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const button = document.getElementById('mobile-menu-button');
-    const menu = document.getElementById('navbar-menu');
-    
-    button.addEventListener('click', function() {
-      menu.classList.toggle('hidden');
-      menu.classList.toggle('flex');
-      menu.classList.toggle('flex-col');
-      menu.classList.toggle('absolute');
-      menu.classList.toggle('top-16');
-      menu.classList.toggle('right-0'); 
-      menu.classList.toggle('text-right');
-      menu.classList.toggle('bg-gray-800');
-      menu.classList.toggle('p-4');
-      menu.classList.toggle('rounded');
-      menu.classList.toggle('shadow-lg');
-      menu.classList.toggle('z-10');
-      
-      // Tambahkan spacing untuk item menu mobile
-      const menuItems = menu.querySelectorAll('a');
-      menuItems.forEach(item => {
-        item.classList.toggle('block');
-        item.classList.toggle('mb-2');
-        item.classList.toggle('pl-2');
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('mobile-menu-button');
+      const menu = document.getElementById('navbar-menu');
+
+      button.addEventListener('click', function() {
+        menu.classList.toggle('hidden');
+        menu.classList.toggle('flex');
+        menu.classList.toggle('flex-col');
+        menu.classList.toggle('absolute');
+        menu.classList.toggle('top-16');
+        menu.classList.toggle('right-0');
+        menu.classList.toggle('text-right');
+        menu.classList.toggle('bg-gray-800');
+        menu.classList.toggle('p-4');
+        menu.classList.toggle('rounded');
+        menu.classList.toggle('shadow-lg');
+        menu.classList.toggle('z-10');
+
+        // Tambahkan spacing untuk item menu mobile
+        const menuItems = menu.querySelectorAll('a');
+        menuItems.forEach(item => {
+          item.classList.toggle('block');
+          item.classList.toggle('mb-2');
+          item.classList.toggle('pl-2');
+        });
       });
+
+      // Carousel functionality
+      const slides = document.getElementById('carousel-slides');
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      const slideCount = slides.children.length;
+      let currentSlide = 0;
+
+      function updateSlidePosition() {
+        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+      }
+
+      if (prevBtn && nextBtn && slideCount > 0) {
+        prevBtn.addEventListener('click', function() {
+          currentSlide = (currentSlide - 1 + slideCount) % slideCount;
+          updateSlidePosition();
+        });
+
+        nextBtn.addEventListener('click', function() {
+          currentSlide = (currentSlide + 1) % slideCount;
+          updateSlidePosition();
+        });
+
+        // Auto-advance slides every 5 seconds
+        setInterval(function() {
+          currentSlide = (currentSlide + 1) % slideCount;
+          updateSlidePosition();
+        }, 5000);
+      }
     });
-    
-    // Carousel functionality
-    const slides = document.getElementById('carousel-slides');
-    const prevBtn = document.getElementById('prev');
-    const nextBtn = document.getElementById('next');
-    const slideCount = slides.children.length;
-    let currentSlide = 0;
-    
-    function updateSlidePosition() {
-      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-    }
-    
-    if (prevBtn && nextBtn && slideCount > 0) {
-      prevBtn.addEventListener('click', function() {
-        currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-        updateSlidePosition();
-      });
-      
-      nextBtn.addEventListener('click', function() {
-        currentSlide = (currentSlide + 1) % slideCount;
-        updateSlidePosition();
-      });
-      
-      // Auto-advance slides every 5 seconds
-      setInterval(function() {
-        currentSlide = (currentSlide + 1) % slideCount;
-        updateSlidePosition();
-      }, 5000);
-    }
-  });
   </script>
 
   @vite(['resources/js/app.js'])

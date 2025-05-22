@@ -10,9 +10,15 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $productCount = Product::count();
-        $carouselCount = Carousel::count();
+        // Ambil semua data, bukan hanya count
+        $products = Product::all();
+        $carousels = Carousel::all();
         
-        return view('admin', compact('productCount', 'carouselCount'));
+        // Hitung jumlahnya (jika diperlukan)
+        $productCount = $products->count();
+        $carouselCount = $carousels->count();
+        
+        // Pass semua data ke view
+        return view('admin', compact('products', 'carousels', 'productCount', 'carouselCount'));
     }
 }

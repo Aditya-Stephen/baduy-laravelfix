@@ -33,7 +33,7 @@ class ProductController extends Controller
             'image' => 'images/products/'.$imageName,
         ]);
 
-        return redirect()->route('admin.index')->with('success', 'Produk berhasil ditambahkan');
+        return redirect()->route('admin')->with('success', 'Produk berhasil ditambahkan');
     }
 
     public function update(Request $request, Product $product)
@@ -64,7 +64,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return redirect()->route('admin.index')->with('success', 'Produk berhasil diperbarui');
+        return redirect()->route('admin')->with('success', 'Produk berhasil diperbarui');
     }
 
     public function destroy(Product $product)
@@ -76,6 +76,6 @@ class ProductController extends Controller
         
         $product->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Produk berhasil dihapus');
+        return redirect()->route('admin')->with('success', 'Produk berhasil dihapus');
     }
 }

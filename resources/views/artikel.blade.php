@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Basic -->
   <meta charset="utf-8">
@@ -20,11 +21,8 @@
   <!-- Site Icons -->
   <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-  <!-- Panggil file CSS dan JavaScript menggunakan Vite -->
-  @vite(['resources/js/app.js'])
 </head>
 
 <body class="bg-gray-900">
@@ -42,9 +40,9 @@
         <div class="hidden md:flex flex-1 mx-8">
           <form action="{{ url('/artikel') }}" method="GET" class="w-full max-w-xl" role="search">
             <div class="relative flex items-center w-full">
-              <input id="search" type="search" name="search" placeholder="Cari artikel..." 
-                     class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" 
-                     required />
+              <input id="search" type="search" name="search" placeholder="Cari artikel..."
+                class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                required />
               <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-white">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -69,27 +67,27 @@
           <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
           <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
           <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
-          
+
           <!-- Login/Logout -->
           @auth
-            <div class="relative" x-data="{ open: false }">
-              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                {{ Auth::user()->name }}
-                <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                <form method="POST" action="{{ route('logout') }}">
-                  @csrf
-                  <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                    Logout
-                  </button>
-                </form>
-              </div>
+          <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
+              {{ Auth::user()->name }}
+              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                  Logout
+                </button>
+              </form>
             </div>
+          </div>
           @else
-            <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
+          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
           @endauth
         </div>
       </div>
@@ -100,9 +98,9 @@
     <div class="md:hidden mt-2 px-4" id="mobile-search" style="display: none;">
       <form action="{{ url('/artikel') }}" method="GET" class="w-full" role="search">
         <div class="relative flex items-center w-full">
-          <input type="search" name="search" placeholder="Cari artikel..." 
-                 class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" 
-                 required />
+          <input type="search" name="search" placeholder="Cari artikel..."
+            class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+            required />
           <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-white">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -112,7 +110,7 @@
       </form>
     </div>
   </header>
-  
+
   <div class="banner-area banner-bg-artikel">
     <!-- ...kode lainnya... -->
   </div>
@@ -158,14 +156,14 @@
       </div>
     </div>
   </footer>
-  
+
   <!-- Script untuk mobile menu dan search - PERBAIKAN: script yang lebih robust -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const button = document.getElementById('mobile-menu-button');
       const menu = document.getElementById('navbar-menu');
       const mobileSearch = document.getElementById('mobile-search');
-      
+
       if (button && menu && mobileSearch) {
         button.addEventListener('click', function() {
           // Toggle menu
@@ -182,14 +180,14 @@
           menu.classList.toggle('rounded');
           menu.classList.toggle('shadow-lg');
           menu.classList.toggle('z-10');
-          
+
           // Lebih eksplisit untuk search bar
           if (mobileSearch.style.display === 'none') {
             mobileSearch.style.display = 'block';
           } else {
             mobileSearch.style.display = 'none';
           }
-          
+
           // Styling untuk item menu
           const menuItems = menu.querySelectorAll('a');
           menuItems.forEach(item => {
@@ -215,4 +213,5 @@
   <!-- Jika pakai Vite, panggilan ini HARUS yang terakhir -->
   @vite(['resources/js/app.js'])
 </body>
+
 </html>

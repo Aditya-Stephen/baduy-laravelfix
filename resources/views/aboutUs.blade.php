@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<!-- Basic -->
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<!-- Mobile Metas -->
-<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<!-- Site Metas -->
-<title>About Baduy</title>
-<meta name="keywords" content="">
-<meta name="description" content="">
-<meta name="author" content="">
-<script src="https://cdn.tailwindcss.com"></script>
-
-<link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
-
-<!-- Panggil file CSS dan JavaScript menggunakan Vite -->
-@vite(['resources/js/app.js'])
-
+  <!-- Site Metas -->
+  <title>About Baduy</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="bg-gray-900">
@@ -75,22 +71,6 @@
     </nav>
   </header>
 
-  <div class="banner-area banner-bg-1">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="banner">
-            <h2>About Us</h2>
-            <ul class="page-title-link">
-              <li><a href="#">Home</a></li>
-              <li><a href="#">About Us</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <section class="max-w-7xl mx-auto px-4 py-12">
     <div class="grid md:grid-cols-2 gap-8 items-center">
       <div>
@@ -105,7 +85,7 @@
         <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
       </div>
       <div>
-        <img src="suasana1.jpg" alt="Baduy Group" class="rounded-lg shadow-md">
+        <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
       </div>
     </div>
   </section>
@@ -115,7 +95,7 @@
   <section class="max-w-7xl mx-auto px-4 pb-12">
     <div class="grid md:grid-cols-2 gap-8 items-center">
       <div>
-        <img src="suasana1.jpg" alt="Baduy Village" class="rounded-lg shadow-md">
+        <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
       </div>
       <div>
         <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
@@ -178,34 +158,34 @@
 
   <!-- JS FILES -->
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  const button = document.getElementById('mobile-menu-button');
-  const menu = document.getElementById('navbar-menu');
-  
-  button.addEventListener('click', function() {
-    menu.classList.toggle('hidden');
-    menu.classList.toggle('flex');
-    menu.classList.toggle('flex-col');
-    menu.classList.toggle('absolute');
-    menu.classList.toggle('top-16');
-    menu.classList.toggle('right-0'); // Ubah right-4 menjadi left-0
-    menu.classList.toggle('text-right'); // Tambahkan text-left untuk rata kiri
-    menu.classList.toggle('bg-gray-800');
-    menu.classList.toggle('p-4');
-    menu.classList.toggle('rounded');
-    menu.classList.toggle('shadow-lg');
-    menu.classList.toggle('z-10');
-    
-    // Tambahkan spacing untuk item menu mobile
-    const menuItems = menu.querySelectorAll('a');
-    menuItems.forEach(item => {
-      item.classList.toggle('block');
-      item.classList.toggle('mb-2');
-      item.classList.toggle('pl-2');
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('mobile-menu-button');
+      const menu = document.getElementById('navbar-menu');
+
+      button.addEventListener('click', function() {
+        menu.classList.toggle('hidden');
+        menu.classList.toggle('flex');
+        menu.classList.toggle('flex-col');
+        menu.classList.toggle('absolute');
+        menu.classList.toggle('top-16');
+        menu.classList.toggle('right-0'); // Ubah right-4 menjadi left-0
+        menu.classList.toggle('text-right'); // Tambahkan text-left untuk rata kiri
+        menu.classList.toggle('bg-gray-800');
+        menu.classList.toggle('p-4');
+        menu.classList.toggle('rounded');
+        menu.classList.toggle('shadow-lg');
+        menu.classList.toggle('z-10');
+
+        // Tambahkan spacing untuk item menu mobile
+        const menuItems = menu.querySelectorAll('a');
+        menuItems.forEach(item => {
+          item.classList.toggle('block');
+          item.classList.toggle('mb-2');
+          item.classList.toggle('pl-2');
+        });
+      });
     });
-  });
-});
-</script>
+  </script>
   @vite(['resources/js/app.js'])
 
 

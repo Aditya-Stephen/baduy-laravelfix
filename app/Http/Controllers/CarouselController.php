@@ -33,7 +33,7 @@ class CarouselController extends Controller
             'image' => 'images/carousels/'.$imageName,
         ]);
 
-        return redirect()->route('admin.index')->with('success', 'Slide carousel berhasil ditambahkan');
+        return redirect()->route('admin')->with('success', 'Slide carousel berhasil ditambahkan');
     }
 
     public function update(Request $request, Carousel $carousel)
@@ -52,7 +52,6 @@ class CarouselController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
             if ($carousel->image && file_exists(public_path($carousel->image))) {
                 unlink(public_path($carousel->image));
             }
@@ -64,7 +63,7 @@ class CarouselController extends Controller
 
         $carousel->update($data);
 
-        return redirect()->route('admin.index')->with('success', 'Slide carousel berhasil diperbarui');
+        return redirect()->route('admin')->with('success', 'Slide carousel berhasil diperbarui');
     }
 
     public function destroy(Carousel $carousel)
@@ -76,6 +75,6 @@ class CarouselController extends Controller
         
         $carousel->delete();
 
-        return redirect()->route('admin.index')->with('success', 'Slide carousel berhasil dihapus');
+        return redirect()->route('admin')->with('success', 'Slide carousel berhasil dihapus');
     }
 }
