@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ArtikelController;
@@ -7,16 +8,16 @@ use App\Http\Controllers\AuthController;
 
 // Halaman utama (Homepage) - dapat diakses tanpa login
 Route::get('/', function () {
-    return view('homepage');
-})->name('homepage');
+    return view('profile.homepage');
+})->name('profile.homepage');
 
 // Middleware untuk halaman yang membutuhkan login
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
 
 // Routing Artikel
-Route::controller(ArtikelController::class)->group(function () {
+Route::controller(ArticleController::class)->group(function () {
     // Menampilkan daftar artikel
-    Route::get('/artikel', 'index')->name('artikel');
+    Route::get('/artikel', 'index')->name('profile.artikel');
     
     // Menampilkan form tambah artikel
     Route::get('/artikel/create', 'create')->name('artikel.create');
