@@ -25,7 +25,7 @@
 
 </head>
 
-<body class="bg-gray-900">
+<body class="bg-gray-100">
   <header class="header header_style_01 bg-gray-800 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
@@ -111,25 +111,211 @@
     </div>
   </header>
 
-  <div class="banner-area banner-bg-artikel">
-    <!-- ...kode lainnya... -->
-  </div>
+  <main class="flex-grow">
+      <!-- Banner Area -->
+      <div class="banner-area bg-[url('{{ asset('images/banner-artikel.jpg') }}')] bg-cover bg-center bg-no-repeat py-[120px] relative z-0">    <div class="container mx-auto px-4">
+            <div class="flex">
+                <div class="w-full">
+                    <div class="banner h-[300px] md:h-[200px] bg-cover bg-center bg-no-repeat">
+                        <h2 class="text-4xl font-bold text-white">Welcome To Artikel</h2>
+                        <ul class="page-title-link mt-4">
+                            <li>
+                                <a href="#" class="text-white italic">"Tak perlu listrik untuk menyinari kehidupan Baduy mengajarkan bahwa cahaya sejati berasal dari kesederhanaan dan keharmonisan."</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+      </div>    
 
-  <footer class="bg-[#262828] text-white py-8 mt-16">
+        <!-- Section Kategori Horizontal -->
+        <div class="bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3] py-1 border-b border-gray-200 shadow-sm">
+          <div class="container mx-auto px-4">
+              <div class="relative flex justify-center">
+                  <ul class="flex space-x-10 overflow-x-auto py-2 scrollbar-hide mx-auto"> <!-- Changed space-x-1 to space-x-4 -->
+                      @php
+                          $categories = [
+                              'all' => 'Terbaru',
+                              'Budaya & Tradisi' => 'Budaya & Tradisi',
+                              'Kearifan Lokal' => 'Kearifan Lokal',
+                              'Mitos & Kepercayaan' => 'Mitos & Kepercayaan',
+                              'Lokasi' => 'Lokasi'
+                          ];
+                      @endphp
+                      
+                      @foreach($categories as $key => $label)
+                      <li class="flex-shrink-0">
+                          <a href="{{ route('artikel', ['genre' => request('genre') == $key ? 'all' : $key]) }}" 
+                            class="relative block px-6 py-3 rounded-lg transition-all duration-300 group
+                                    @if(request('genre') == $key || ($key == 'all' && !request('genre'))) 
+                                        bg-[#6d6d4f] text-white shadow-md
+                                    @else 
+                                        bg-white/80 text-gray-700
+                                    @endif">
+                              <span class="relative z-10 font-medium whitespace-nowrap group-hover:text-white">
+                                  {{ $label }}
+                              </span>
+                              <!-- Hover effect background -->
+                              <span class="absolute inset-0 rounded-lg bg-[#6d6d4f] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
+                              
+                              <!-- Active indicator -->
+                              @if(request('genre') == $key || ($key == 'all' && !request('genre')))
+                              <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-300 rounded-t-md"></span>
+                              @endif
+                          </a>
+                      </li>
+                      @endforeach
+                  </ul>
+              </div>
+          </div>
+        </div>
+
+        <!-- section artikel -->
+        <div id="article-section" class="py-16 bg-[#fafaf7]">
+          <div class="container mx-auto px-4">
+              <div class="flex flex-col lg:flex-row">
+                  <!-- Main Content Area -->
+                  <div class="w-full lg:w-8/12 lg:pr-8">
+                      <!-- Search Alerts -->
+                      @if(request()->has('search'))
+                          @if($articles->isEmpty())
+                              <div class="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 mb-8 rounded-r-lg shadow-sm">
+                                  <p class="font-medium">Tidak ditemukan hasil untuk: <strong class="text-yellow-900">{{ request('search') }}</strong></p>
+                              </div>
+                          @else
+                              <div class="bg-green-50 border-l-4 border-green-400 text-green-800 p-4 mb-8 rounded-r-lg shadow-sm">
+                                  <p class="font-medium">Menampilkan hasil untuk: <strong class="text-green-900">{{ request('search') }}</strong></p>
+                              </div>
+                          @endif
+                      @endif
+
+                      <!-- Success Message -->
+                      @if(session('success'))
+                      <div class="bg-green-50 border-l-4 border-green-400 text-green-800 p-4 mb-8 rounded-r-lg shadow-sm flex justify-between items-center">
+                          <span class="font-medium">{{ session('success') }}</span>
+                          <button type="button" class="text-green-600 hover:text-green-900 transition-colors" data-dismiss="alert" aria-label="Close">
+                              <span class="text-2xl leading-none">&times;</span>
+                          </button>
+                      </div>
+                      @endif
+
+                      <!-- Articles List -->
+                      <div class="space-y-12">
+                        @foreach ($articles as $article)
+                        <article class="group relative flex flex-col md:flex-row gap-6 pb-12 border-b border-gray-300 hover:border-gray-400 transition-colors duration-300">
+                            <!-- Author Avatar -->
+                            <div class="flex-shrink-0 relative">
+                                <div class="absolute -inset-2 bg-blue-50 rounded-2xl transform scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-0"></div>
+                                <img 
+                                    src="{{ $article->user->profile_photo_path ? (filter_var($article->user->profile_photo_path, FILTER_VALIDATE_URL) ? $article->user->profile_photo_path : asset('storage/'.$article->user->profile_photo_path)) : asset('images/user-profile.png') }}" 
+                                    alt="{{ $article->user->name }}" 
+                                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 hover:border-blue-300 hover:shadow-lg transition-all duration-200 ease-out">
+                            </div>
+
+                            <!-- Article Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center mb-2">
+                                    <h3 class="text-xl font-semibold text-blue-800 hover:text-blue-600 transition-colors">
+                                        {{ $article->user->name }}
+                                    </h3>
+                                    <span class="mx-2 text-gray-400">•</span>
+                                    <time class="text-sm text-gray-500">
+                                        @if($article->created_at)
+                                            {{ $article->created_at->format('F j, Y') }}
+                                        @else
+                                            Tanggal tidak tersedia
+                                        @endif
+                                    </time>
+                                </div>
+
+                                <h2 class="text-2xl md:text-3xl font-bold mb-3 text-gray-800 group-hover:text-blue-700 transition-colors">
+                                    <a href="{{ route('artikel.show', $article->id) }}" class="hover:underline decoration-2 underline-offset-4">
+                                        {{ $article->title }}
+                                    </a>
+                                </h2>
+
+                                <p class="text-lg text-gray-600 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide">
+                                  {{ Str::limit($article->content, 400) }}
+                                </p>
+
+                                <a href="{{ route('artikel.show', $article->id) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                    Baca lebih banyak
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </article>
+                        @endforeach
+                      </div>
+                  </div>
+
+                  <!-- Sidebar -->
+                  <div class="w-full lg:w-4/12 mt-12 lg:mt-0">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">Kategori Populer</h3>
+                        <ul class="space-y-3">
+                            @php
+                                $categories = [
+                                    'Budaya & Tradisi' => App\Models\Article::where('genre', 'Budaya & Tradisi')->count(),
+                                    'Kearifan Lokal' => App\Models\Article::where('genre', 'Kearifan Lokal')->count(),
+                                    'Mitos & Kepercayaan' => App\Models\Article::where('genre', 'Mitos & Kepercayaan')->count(),
+                                    'Lokasi' => App\Models\Article::where('genre', 'Lokasi')->count()
+                                ];
+                            @endphp
+                            
+                            @foreach($categories as $category => $count)
+                            <li>
+                                <a href="{{ route('artikel', ['genre' => $category]) }}" 
+                                  class="flex items-center justify-between text-gray-700 hover:text-blue-600 transition-colors">
+                                    <span>{{ $category }}</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                        {{ $count }}
+                                    </span>
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Tombol Tambah Artikel -->
+        <div class="fixed bottom-[60px] right-[50px] z-[900] md:bottom-[50px] md:right-[40px]">
+            <a href="{{ route('artikel.create') }}" 
+                class="group relative flex items-center justify-center gap-3 h-[5.5rem] md:h-[4rem] w-[6.5rem] md:w-[4.2rem] bg-[#2f4f7f] border border-white overflow-hidden transition-all duration-300 ease-in-out shadow-md hover:bg-[#1a1d23] hover:pr-[0rem] focus-visible:outline-none focus-visible:bg-[#1a1d23] focus-visible:pr-[2rem]">
+                
+                <!-- Segitiga di pojok kanan atas -->
+                <div class="absolute top-0 right-0 w-0 h-0 border-r-[1.2rem] border-r-white border-b-[1.2rem] border-b-transparent transition-all duration-200 ease-in-out group-hover:border-r-[12.65rem] group-hover:border-b-[12.65rem] group-focus-visible:border-r-[8.25rem] group-focus-visible:border-b-[8.25rem]"></div>
+                
+                <!-- Icon Plus -->
+                <svg class="w-[2.75rem] h-[2.75rem] md:w-[1.5rem] md:h-[2.5rem] fill-white transition-all duration-300 ease-in-out group-hover:fill-[#1a1d23] group-hover:rotate-180 group-focus-visible:fill-white group-focus-visible:rotate-180" 
+                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                    <g mask="url(#mask0_21_345)">
+                        <path d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z"></path>
+                    </g>
+                </svg>
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-[#262828] text-white py-8 w-full">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
 
         <!-- Left: Logo / Title -->
         <div class="flex items-center space-x-4 text-center md:text-left">
-          <img src="{{ asset('images/logobadui1.webp') }}" alt="Baduy Logo" class="me-10 w-25 h-20 object-contain">
+          <img src="{{ asset('images/logobadui1.webp') }}" alt="Baduy Logo" class="me-10 w-10 h-10 object-contain">
           <div class="text-center md:text-left">
-            <h2 class="text-4xl font-bold text-yellow-400">Suku Baduy</h2>
-            <p class="text-xl mt-1 text-gray-300">Preserving Culture. Promoting Tradition.</p>
+            <h2 class="text-sm font-bold text-yellow-400">Suku Baduy</h2>
+            <p class="text-xs mt-1 text-gray-300">Preserving Culture. Promoting Tradition.</p>
           </div>
         </div>
 
         <!-- Center: Navigation -->
-        <div class="space-x-4 text-2xl">
+        <div class="space-x-4 text-sm">
           <a href="{{ url('/') }}" class="hover:text-yellow-400 transition">Home</a>
           <a href="{{ url('/aboutUs') }}" class="hover:text-yellow-400 transition">About</a>
           <a href="{{ url('/marketplace') }}" class="hover:text-yellow-400 transition">Products</a>
@@ -139,79 +325,79 @@
         <!-- Right: Social Media -->
         <div class="flex space-x-4">
           <a href="#" class="hover:text-yellow-400 transition">
-            <svg class="w-10 h-8 fill-current" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
               <path d="M22 4.01c-.77.34-1.6.56-2.46.66a4.26 4.26 0 0 0 1.88-2.36c-.83.49-1.74.85-2.7 1.04a4.24 4.24 0 0 0-7.22 3.87 12.01 12.01 0 0 1-8.73-4.43 4.25 4.25 0 0 0 1.31 5.67 4.21 4.21 0 0 1-1.92-.53v.05a4.25 4.25 0 0 0 3.4 4.17 4.28 4.28 0 0 1-1.91.07 4.25 4.25 0 0 0 3.97 2.95 8.5 8.5 0 0 1-5.28 1.82c-.34 0-.68-.02-1.01-.06a12.03 12.03 0 0 0 6.5 1.91c7.8 0 12.07-6.46 12.07-12.07 0-.18 0-.35-.01-.53A8.65 8.65 0 0 0 22 4.01z" />
             </svg>
           </a>
           <a href="#" class="hover:text-yellow-400 transition">
-            <svg class="w-10 h-8 fill-current" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
               <path d="M12 2.04c-5.52 0-10 4.47-10 9.98 0 4.41 3.59 8.08 8.27 8.98v-6.36H7.9v-2.62h2.37V9.57c0-2.35 1.38-3.65 3.5-3.65 1.02 0 2.1.18 2.1.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.45v1.74h2.59l-.41 2.62h-2.18v6.36C18.41 20.1 22 16.43 22 11.98c0-5.5-4.48-9.97-10-9.97z" />
             </svg>
           </a>
         </div>
       </div>
 
-      <div class="border-t border-gray-700 mt-8 pt-4 text-center text-base text-gray-400">
+      <div class="border-t border-gray-700 mt-8 pt-4 text-center text-sm text-gray-400">
         © Baduy Official. All rights reserved.
       </div>
     </div>
   </footer>
-
-  <!-- Script untuk mobile menu dan search - PERBAIKAN: script yang lebih robust -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const button = document.getElementById('mobile-menu-button');
-      const menu = document.getElementById('navbar-menu');
-      const mobileSearch = document.getElementById('mobile-search');
-
-      if (button && menu && mobileSearch) {
-        button.addEventListener('click', function() {
-          // Toggle menu
-          menu.classList.toggle('hidden');
-          menu.classList.toggle('flex');
-          menu.classList.toggle('flex-col');
-          menu.classList.toggle('absolute');
-          menu.classList.toggle('top-16');
-          menu.classList.toggle('left-0');
-          menu.classList.toggle('w-full');
-          menu.classList.toggle('text-left');
-          menu.classList.toggle('bg-gray-800');
-          menu.classList.toggle('p-4');
-          menu.classList.toggle('rounded');
-          menu.classList.toggle('shadow-lg');
-          menu.classList.toggle('z-10');
-
-          // Lebih eksplisit untuk search bar
-          if (mobileSearch.style.display === 'none') {
-            mobileSearch.style.display = 'block';
-          } else {
-            mobileSearch.style.display = 'none';
-          }
-
-          // Styling untuk item menu
-          const menuItems = menu.querySelectorAll('a');
-          menuItems.forEach(item => {
-            item.classList.toggle('block');
-            item.classList.toggle('mb-2');
-            item.classList.toggle('pl-2');
+  
+    <!-- Script untuk mobile menu dan search - PERBAIKAN: script yang lebih robust -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const button = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('navbar-menu');
+        const mobileSearch = document.getElementById('mobile-search');
+  
+        if (button && menu && mobileSearch) {
+          button.addEventListener('click', function() {
+            // Toggle menu
+            menu.classList.toggle('hidden');
+            menu.classList.toggle('flex');
+            menu.classList.toggle('flex-col');
+            menu.classList.toggle('absolute');
+            menu.classList.toggle('top-16');
+            menu.classList.toggle('left-0');
+            menu.classList.toggle('w-full');
+            menu.classList.toggle('text-left');
+            menu.classList.toggle('bg-gray-800');
+            menu.classList.toggle('p-4');
+            menu.classList.toggle('rounded');
+            menu.classList.toggle('shadow-lg');
+            menu.classList.toggle('z-10');
+  
+            // Lebih eksplisit untuk search bar
+            if (mobileSearch.style.display === 'none') {
+              mobileSearch.style.display = 'block';
+            } else {
+              mobileSearch.style.display = 'none';
+            }
+  
+            // Styling untuk item menu
+            const menuItems = menu.querySelectorAll('a');
+            menuItems.forEach(item => {
+              item.classList.toggle('block');
+              item.classList.toggle('mb-2');
+              item.classList.toggle('pl-2');
+            });
           });
-        });
-      }
-
-      // Highlight current page
-      const currentPath = window.location.pathname;
-      const navLinks = document.querySelectorAll('#navbar-menu a');
-      navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-          link.classList.add('text-yellow-400');
-          link.classList.add('font-bold');
         }
+  
+        // Highlight current page
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('#navbar-menu a');
+        navLinks.forEach(link => {
+          if (link.getAttribute('href') === currentPath) {
+            link.classList.add('text-yellow-400');
+            link.classList.add('font-bold');
+          }
+        });
       });
-    });
-  </script>
-
-  <!-- Jika pakai Vite, panggilan ini HARUS yang terakhir -->
-  @vite(['resources/js/app.js'])
-</body>
-
-</html>
+    </script>
+  
+    <!-- Jika pakai Vite, panggilan ini HARUS yang terakhir -->
+    @vite(['resources/js/app.js'])
+  </body>
+  
+  </html>

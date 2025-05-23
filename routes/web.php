@@ -3,7 +3,6 @@
 use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
@@ -23,8 +22,19 @@ Route::get('/aboutUs', function () {
 })->name('aboutUs');
 
 // Artikel routes
-Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel');
-Route::get('/artikel/{id}', [ArtikelController::class, 'show'])->name('artikel.show');
+Route::controller(ArticleController::class)->group(function () {
+    // Menampilkan daftar artikel
+    Route::get('/artikel', 'index')->name('artikel');
+
+    Route::middleware('auth')->group(function () {
+        // Menyimpan artikel baru  
+        Route::post('/artikel', [ArticleController::class, 'store'])->name('artikel.store');    
+        // Menampilkan form tambah artikel
+        Route::get('/artikel/create', [ArticleController::class, 'create'])->name('artikel.create');
+    });
+    // nampilin detail artikel
+    Route::get('/artikel/{id}', 'show')->name('artikel.show');
+});
 
 // Auth routes
 Route::get('/login', function () {
