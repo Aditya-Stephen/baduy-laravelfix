@@ -32,7 +32,7 @@
     </header>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8" x-data="{ activeTab: 'products' }">
+    <div class="container mx-auto px-4 py-8" x-data="{ activeTab: '{{ session('active_tab', 'products') }}', activeArticleTab: '{{ session('active_article_tab', 'pending') }}'}">        
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Sidebar -->
             <div class="w-full md:w-1/4 bg-white rounded-lg shadow p-4">
@@ -60,13 +60,20 @@
                                 Lihat Website
                             </a>
                         </li>
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-4 rounded"
+                                :class="{ 'bg-gray-800 text-white': activeTab === 'articles', 'hover:bg-gray-200 text-gray-800': activeTab !== 'articles' }"
+                                @click.prevent="activeTab = 'articles'">
+                                Kelola Artikel
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
 
             <!-- Main Panel -->
             <div class="w-full md:w-3/4" x-data="{ showAddProductModal: false, showEditProductModal: false, showAddCarouselModal: false, showEditCarouselModal: false, editProductId: null, editCarouselId: null }">
-
                 <!-- Products Tab -->
                 <div x-show="activeTab === 'products'">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
@@ -79,9 +86,9 @@
                             </button>
                         </div>
 
-                        <!-- Success Message -->
-                        @if(session('success'))
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                        <!-- Success product Message -->
+                        @if(session('success') && !session('article_success'))
+                        <div x-show="activeTab === 'products'" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
                             <p>{{ session('success') }}</p>
                         </div>
                         @endif
@@ -205,6 +212,164 @@
                                     @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Artikel tab -->
+                <div x-show="activeTab === 'articles'" x-data="{ showRejectModal: false, rejectArticleId: null }">
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <!-- Notifikasi Artikel -->
+                        @if(session('article_success'))
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p>{{ session('article_success') }}</p>
+                        </div>
+                        @endif
+
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-800">Kelola Artikel</h2>
+                        </div>
+
+                        <!-- Tab Navigasi -->
+                        <div class="mb-6 border-b border-gray-200">
+                            <ul class="flex flex-wrap -mb-px">
+                                <li class="mr-2">
+                                    <button class="inline-block p-4 border-b-2 rounded-t-lg" 
+                                            :class="{ 
+                                                'border-[#6d6d4f] text-[#6d6d4f]': activeArticleTab === 'pending', 
+                                                'border-transparent hover:text-gray-600 hover:border-gray-300': activeArticleTab !== 'pending' 
+                                            }"
+                                            @click="activeArticleTab = 'pending'">
+                                        Menunggu Approval
+                                    </button>
+                                </li>
+                                <li class="mr-2">
+                                    <button class="inline-block p-4 border-b-2 rounded-t-lg" 
+                                            :class="{ 
+                                                'border-[#6d6d4f] text-[#6d6d4f]': activeArticleTab === 'approved', 
+                                                'border-transparent hover:text-gray-600 hover:border-gray-300': activeArticleTab !== 'approved' 
+                                            }"
+                                            @click="activeArticleTab = 'approved'">
+                                        Artikel Disetujui
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Tab Content - Pending Articles -->
+                        <div x-show="activeArticleTab === 'pending'" class="bg-white rounded-lg">
+                            @if($pendingArticles->isEmpty())
+                                <div class="text-center py-8 text-gray-500">
+                                    Tidak ada artikel yang menunggu persetujuan
+                                </div>
+                            @else
+                                <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white border border-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th class="px-4 py-3 border">Judul</th>
+                                                    <th class="px-4 py-3 border">Penulis</th>
+                                                    <th class="px-4 py-3 border">Kategori</th>
+                                                    <th class="px-4 py-3 border">Tanggal</th>
+                                                    <th class="px-4 py-3 border">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($pendingArticles as $article)
+                                                <tr>
+                                                    <td class="px-4 py-3 border">{{ Str::limit($article->title, 40) }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->user->name }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->genre }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->created_at->format('d M Y') }}</td>
+                                                    <td class="px-4 py-3 border">
+                                                        <div class="flex space-x-2 justify-center">
+                                                            <a href="{{ url('admin/preview/' . $article->id) }}" 
+                                                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                                                 Lihat
+                                                             </a>
+                                                            <form method="POST" action="/admin/articles/{{ $article->id }}/approve">
+                                                                @csrf
+                                                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
+                                                                    Setujui
+                                                                </button>
+                                                            </form>
+                                                            <button @click="showRejectModal = true; rejectArticleId = {{ $article->id }}" 
+                                                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                                                Tolak
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Tab Content - Approved Articles -->
+                            <div x-show="activeArticleTab === 'approved'" class="bg-white rounded-lg">
+                                @if($approvedArticles->isEmpty())
+                                    <div class="text-center py-8 text-gray-500">
+                                        Belum ada artikel yang disetujui
+                                    </div>
+                                @else
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full bg-white border border-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th class="px-4 py-3 border">Judul</th>
+                                                    <th class="px-4 py-3 border">Penulis</th>
+                                                    <th class="px-4 py-3 border">Kategori</th>
+                                                    <th class="px-4 py-3 border">Tanggal</th>
+                                                    <th class="px-4 py-3 border">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($approvedArticles as $article)
+                                                <tr>
+                                                    <td class="px-4 py-3 border">{{ Str::limit($article->title, 40) }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->user->name }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->genre }}</td>
+                                                    <td class="px-4 py-3 border">{{ $article->created_at->format('d M Y') }}</td>
+                                                    <td class="px-4 py-3 border">
+                                                        <div class="flex space-x-2 justify-center">
+                                                            <a href="{{ route('artikel.show', ['id' => $article->id, 'admin' => true]) }}" 
+                                                                target="_blank" 
+                                                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                                                 Lihat
+                                                             </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reject Modal -->
+                    <div x-show="showRejectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                        <div class="bg-white rounded-lg p-8 max-w-md w-full">
+                            <form method="POST" x-bind:action="'/admin/articles/' + rejectArticleId + '/reject'">
+                                @csrf
+                                <div class="mb-4">
+                                    <label for="reason" class="block text-gray-700 text-sm font-bold mb-2">Alasan Penolakan:</label>
+                                    <textarea id="reason" name="reason" rows="4" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                                </div>
+                                <div class="flex justify-end space-x-4">
+                                    <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                        @click="showRejectModal = false">
+                                        Batal
+                                    </button>
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                                        Tolak Artikel
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

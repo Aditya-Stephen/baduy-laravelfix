@@ -35,8 +35,7 @@
             <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
           </a>
         </div>
-
-        <!-- Hamburger menu untuk mobile -->
+<!-- Hamburger menu untuk mobile -->
         <div class="md:hidden">
           <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,20 +54,30 @@
           <!-- Login/Logout -->
           @auth
           <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-              {{ Auth::user()->name }}
-              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                  Logout
-                </button>
-              </form>
-            </div>
+              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
+                  @if(Auth::user()->profile_photo_path)
+                      <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                  @else
+                      <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
+                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                      </div>
+                  @endif
+                  {{ Auth::user()->name }}
+                  <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                  <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                      Edit Profile
+                  </a>
+                  <form method="POST" action="{{ route('logout') }}">
+                      @csrf
+                      <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                          Logout
+                      </button>
+                  </form>
+              </div>
           </div>
           @else
           <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
@@ -76,7 +85,7 @@
         </div>
       </div>
     </nav>
-    </header>
+</header>
 
     <div class="bg-[#fafaf7] py-[30px]">
         <!-- Article Content -->
@@ -108,7 +117,7 @@
                                         <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                                             <span class="text-sm font-medium">Featured Article</span>
                                         </div>
-                                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 text-shadow-lg">{{ $article->title }}</h1>
+                                        <h1 class="text-4xl md:text-5xl lg:text-5xl font-bold mb-2 text-shadow-lg">{{ $article->title }}</h1>
                                     </div>
                                 </div>
                             </div>

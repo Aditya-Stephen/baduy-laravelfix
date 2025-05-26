@@ -12,63 +12,66 @@
 </head>
 
 <body class="flex flex-col min-h-screen bg-gray-900 text-white">
-    <header class="sticky top-0 z-50 header header_style_01 bg-gray-800 py-2">
+    <header class="header header_style_01 bg-gray-800 py-2">
         <nav class="container mx-auto px-4">
-            <div class="flex items-center justify-between">
-                <!-- Logo (kiri) -->
-                <div class="flex-shrink-0">
-                    <a href="{{ url('/') }}" class="flex items-center">
-                        <img src="{{ asset('images/logobadui1.webp') }}" class="h-14 w-auto object-contain" alt="Baduy Logo">
-                    </a>
-                </div>
+          <div class="flex items-center justify-between">
 
-                <!-- Hamburger menu untuk mobile -->
-                <div class="md:hidden">
-                    <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Menu navigasi (kanan) -->
-                <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-                    <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-                    <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-                    <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-                    <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
-
-                    <!-- Login/Logout -->
-                    @auth
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                            {{ Auth::user()->name }}
-                            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                            <!-- Admin link if user is admin -->
-                            @if(Auth::user()->is_admin ?? false)
-                            <a href="{{ url('/admin') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                Admin Dashboard
-                            </a>
-                            <hr class="my-1 border-gray-200">
-                            @endif
-                            
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                    @else
-                    <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
-                    @endauth
-                </div>
+            <!-- Logo (kiri) -->
+            <div class="flex-shrink-0">
+              <a href="{{ url('/') }}" class="flex items-center">
+                <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+              </a>
             </div>
+            
+            <!-- Hamburger menu untuk mobile -->
+            <div class="md:hidden">
+              <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+    
+            <!-- Menu navigasi (kanan) -->
+            <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
+              <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
+              <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
+              <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
+              <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
+    
+              <!-- Login/Logout -->
+              @auth
+              <div class="relative" x-data="{ open: false }">
+                  <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
+                      @if(Auth::user()->profile_photo_path)
+                          <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                      @else
+                          <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
+                              {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                          </div>
+                      @endif
+                      {{ Auth::user()->name }}
+                      <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                  </button>
+                  <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                      <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                          Edit Profile
+                      </a>
+                      <form method="POST" action="{{ route('logout') }}">
+                          @csrf
+                          <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                              Logout
+                          </button>
+                      </form>
+                  </div>
+              </div>
+              @else
+              <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
+              @endauth
+            </div>
+          </div>
         </nav>
     </header>
 

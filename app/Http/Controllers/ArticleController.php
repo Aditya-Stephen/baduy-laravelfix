@@ -13,7 +13,7 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
-        $query = Article::query()->with('user');
+        $query = Article::query()->with('user')->where('status', 'approved');
         $genre = $request->input('genre');
 
         if ($genre && $genre !== 'all') {
@@ -30,7 +30,9 @@ class ArticleController extends Controller
             });
         }
         
-        $articles = $query->latest()->get();
+        $articles = Article::where('status', 'approved')
+                 ->latest()
+                 ->paginate(10);
         
         $categories = Cache::remember('article_counts_by_category', now()->addHours(6), function() {
             return [
@@ -47,6 +49,16 @@ class ArticleController extends Controller
     public function show($id)
     {
         $article = Article::findOrFail($id);
+    
+        // Admin bisa lihat semua status, user hanya lihat yang approved
+        if (auth()->user() && request()->is('admin/*')) {
+            return view('artikel.show', compact('article'));
+        }
+        
+        if ($article->status !== 'approved') {
+            abort(404);
+        }
+
         return view('artikel.show', compact('article'));
     }
 
@@ -81,13 +93,23 @@ class ArticleController extends Controller
             'title' => $validatedData['title'],
             'genre' => $validatedData['genre'],
             'content' => $validatedData['content'],
-            'header_image' => $imagePath,            
+            'header_image' => $imagePath,
+            'status' => 'pending',  
             'created_at' => now()
         ]);
 
         Cache::forget('article_counts_by_category');
 
         return redirect()->route('artikel')
-            ->with('success', 'Artikel berhasil dipublikasikan!');
+            ->with('success', 'Artikel berhasil diajukan! Menunggu persetujuan admin.');
+    }
+
+    public function adminPreview($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('artikel.show', [
+            'article' => $article,
+            'is_admin_preview' => true
+        ]);
     }
 }

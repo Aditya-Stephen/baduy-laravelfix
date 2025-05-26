@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProfileController;
+
 
 // Halaman utama dengan data carousel dinamis
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
@@ -68,6 +70,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carousels', [CarouselController::class, 'store'])->name('carousels.store');
     Route::put('/carousels/{carousel}', [CarouselController::class, 'update'])->name('carousels.update');
     Route::delete('/carousels/{carousel}', [CarouselController::class, 'destroy'])->name('carousels.destroy');
+
+    // Artikel Approval Routes
+    Route::post('/admin/articles/{id}/approve', [AdminController::class, 'approveArticle']);
+    Route::post('/admin/articles/{id}/reject', [AdminController::class, 'rejectArticle']);
+    Route::get('/admin/preview/{id}', [ArticleController::class, 'adminPreview'])->name('admin.articles.preview');
+
+    // edit profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
 });
 
 // CATATAN: Setelah route /admin bisa diakses, baru aktifkan middleware admin

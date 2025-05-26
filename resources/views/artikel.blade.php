@@ -71,20 +71,30 @@
           <!-- Login/Logout -->
           @auth
           <div class="relative" x-data="{ open: false }">
-            <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-              {{ Auth::user()->name }}
-              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                  Logout
-                </button>
-              </form>
-            </div>
+              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
+                  @if(Auth::user()->profile_photo_path)
+                      <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                  @else
+                      <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
+                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                      </div>
+                  @endif
+                  {{ Auth::user()->name }}
+                  <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                  </svg>
+              </button>
+              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                  <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                      Edit Profile
+                  </a>
+                  <form method="POST" action="{{ route('logout') }}">
+                      @csrf
+                      <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                          Logout
+                      </button>
+                  </form>
+              </div>
           </div>
           @else
           <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
@@ -126,7 +136,8 @@
                     </div>
                 </div>
             </div>
-      </div>    
+        </div>
+      </div>
 
         <!-- Section Kategori Horizontal -->
         <div class="bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3] py-1 border-b border-gray-200 shadow-sm">
@@ -248,6 +259,70 @@
                         </article>
                         @endforeach
                       </div>
+
+                      <!-- paginasi -->
+                      @if($articles->hasPages())
+                      <div class="mt-16">
+                          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                              <!-- Info halaman -->
+                              <div class="text-base text-gray-600">
+                                  Menampilkan <span class="font-semibold text-gray-800">{{ $articles->firstItem() }}</span> - 
+                                  <span class="font-semibold text-gray-800">{{ $articles->lastItem() }}</span> dari 
+                                  <span class="font-semibold text-gray-800">{{ $articles->total() }}</span> artikel
+                              </div>
+                              
+                              <!-- Navigasi halaman -->
+                              <nav class="flex items-center space-x-4">
+                                  {{-- Previous Page Link --}}
+                                  @if($articles->onFirstPage())
+                                      <span class="px-4 py-2 rounded-lg text-blue-400 cursor-not-allowed border border-blue-200">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                          </svg>
+                                      </span>
+                                  @else
+                                      <a href="{{ $articles->previousPageUrl() }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                          </svg>
+                                          Sebelumnya
+                                      </a>
+                                  @endif
+
+                                  {{-- Pagination Elements --}}
+                                  <div class="flex space-x-3">
+                                      @foreach($articles->getUrlRange(1, $articles->lastPage()) as $page => $url)
+                                          @if($page == $articles->currentPage())
+                                              <span class="px-4 py-2 bg-blue-600 text-white rounded-lg border border-blue-200 font-medium">
+                                                  {{ $page }}
+                                              </span>
+                                          @else
+                                              <a href="{{ $url }}" class="px-4 py-2 text-blue-700 hover:bg-gray-50 rounded-lg border border-blue-200 hover:border-blue-500 transition-all duration-200">
+                                                  {{ $page }}
+                                              </a>
+                                          @endif
+                                      @endforeach
+                                  </div>
+
+                                  {{-- Next Page Link --}}
+                                  @if($articles->hasMorePages())
+                                      <a href="{{ $articles->nextPageUrl() }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                          Selanjutnya
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                          </svg>
+                                      </a>
+                                  @else
+                                      <span class="px-4 py-2 rounded-lg text-blue-400 cursor-not-allowed border border-blue-200">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                          </svg>
+                                      </span>
+                                  @endif
+                              </nav>
+                          </div>
+                      </div>
+                      @endif
                   </div>
 
                   <!-- Sidebar -->
@@ -288,7 +363,7 @@
                 class="group relative flex items-center justify-center gap-3 h-[5.5rem] md:h-[4rem] w-[6.5rem] md:w-[4.2rem] bg-[#2f4f7f] border border-white overflow-hidden transition-all duration-300 ease-in-out shadow-md hover:bg-[#1a1d23] hover:pr-[0rem] focus-visible:outline-none focus-visible:bg-[#1a1d23] focus-visible:pr-[2rem]">
                 
                 <!-- Segitiga di pojok kanan atas -->
-                <div class="absolute top-0 right-0 w-0 h-0 border-r-[1.2rem] border-r-white border-b-[1.2rem] border-b-transparent transition-all duration-200 ease-in-out group-hover:border-r-[12.65rem] group-hover:border-b-[12.65rem] group-focus-visible:border-r-[8.25rem] group-focus-visible:border-b-[8.25rem]"></div>
+                <div class="absolute top-0 right-0 w-0 h-0 border-r-[1.2rem] border-r-blue-400 border-b-[1.2rem] border-b-transparent transition-all duration-200 ease-in-out group-hover:border-r-[12.65rem] group-hover:border-b-[12.65rem] group-focus-visible:border-r-[8.25rem] group-focus-visible:border-b-[8.25rem]"></div>
                 
                 <!-- Icon Plus -->
                 <svg class="w-[2.75rem] h-[2.75rem] md:w-[1.5rem] md:h-[2.5rem] fill-white transition-all duration-300 ease-in-out group-hover:fill-[#1a1d23] group-hover:rotate-180 group-focus-visible:fill-white group-focus-visible:rotate-180" 
