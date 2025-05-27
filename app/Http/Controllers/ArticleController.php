@@ -14,7 +14,7 @@ class ArticleController extends Controller
     {
         $search = $request->input('search');
         $query = Article::query()->with('user')->where('status', 'approved');
-        $genre = $request->input('genre');
+        $genre = $request->input('genre', 'all'); 
 
         if ($genre && $genre !== 'all') {
             $query->where('genre', $genre);
@@ -30,20 +30,19 @@ class ArticleController extends Controller
             });
         }
         
-        $articles = Article::where('status', 'approved')
-                 ->latest()
-                 ->paginate(10);
+        $articles = $query->latest()->paginate(10)->appends($request->query());
         
         $categories = Cache::remember('article_counts_by_category', now()->addHours(6), function() {
             return [
-                'Budaya & Tradisi' => Article::where('genre', 'Budaya & Tradisi')->count(),
-                'Kearifan Lokal' => Article::where('genre', 'Kearifan Lokal')->count(),
-                'Mitos & Kepercayaan' => Article::where('genre', 'Mitos & Kepercayaan')->count(),
-                'Lokasi' => Article::where('genre', 'Lokasi')->count()
+                'all' => Article::where('status', 'approved')->count(),
+                'Budaya & Tradisi' => Article::where('genre', 'Budaya & Tradisi')->where('status', 'approved')->count(),
+                'Kearifan Lokal' => Article::where('genre', 'Kearifan Lokal')->where('status', 'approved')->count(),
+                'Mitos & Kepercayaan' => Article::where('genre', 'Mitos & Kepercayaan')->where('status', 'approved')->count(),
+                'Lokasi' => Article::where('genre', 'Lokasi')->where('status', 'approved')->count()
             ];
         });
 
-        return view('artikel', compact('articles', 'categories'));
+        return view('artikel', compact('articles', 'categories', 'genre'));
     }
 
     public function show($id)

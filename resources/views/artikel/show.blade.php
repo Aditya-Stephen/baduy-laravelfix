@@ -29,13 +29,15 @@
   <header class="header header_style_01 bg-gray-800 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
+
         <!-- Logo (kiri) -->
         <div class="flex-shrink-0">
           <a href="{{ url('/') }}" class="flex items-center">
             <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
           </a>
         </div>
-<!-- Hamburger menu untuk mobile -->
+
+        <!-- Hamburger menu untuk mobile -->
         <div class="md:hidden">
           <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,7 +128,7 @@
                             <div class="order-3">
                                 <p class="italic text-[#9095a1]">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
                                 <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-[#444] my-[30px] text-justify">
-                                    {!! nl2br(e($article->content)) !!}
+                                    {!! $article->content !!}
                                 </div>
                             </div>
                         </div>

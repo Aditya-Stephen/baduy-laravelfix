@@ -123,17 +123,48 @@
 
   <main class="flex-grow">
       <!-- Banner Area -->
-      <div class="banner-area bg-[url('{{ asset('images/banner-artikel.jpg') }}')] bg-cover bg-center bg-no-repeat py-[120px] relative z-0">    <div class="container mx-auto px-4">
-            <div class="flex">
-                <div class="w-full">
-                    <div class="banner h-[300px] md:h-[200px] bg-cover bg-center bg-no-repeat">
-                        <h2 class="text-4xl font-bold text-white">Welcome To Artikel</h2>
-                        <ul class="page-title-link mt-4">
-                            <li>
-                                <a href="#" class="text-white italic">"Tak perlu listrik untuk menyinari kehidupan Baduy mengajarkan bahwa cahaya sejati berasal dari kesederhanaan dan keharmonisan."</a>
-                            </li>
-                        </ul>
-                    </div>
+      <div class="relative overflow-hidden h-[400px] md:h-[500px] lg:h-[600px]">
+        <!-- Background with overlay and parallax effect -->
+        <div class="absolute inset-0 z-0">
+            <div 
+                class="w-full h-full bg-[url('{{ asset('images/banner-artikel.jpg') }}')] bg-cover bg-center bg-no-repeat 
+                      scale-100 hover:scale-105 transition-transform duration-700"
+            ></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#305792]/90 to-[#313a4d]/70"></div>
+        </div>
+
+        <!-- Content Container -->
+        <div class="container mx-auto px-4 h-full flex items-center justify-center relative z-10">
+            <div class="max-w-3xl text-center">
+                <!-- Main Title -->
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.1s_forwards]">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3]">
+                        Welcome To Article
+                    </span>
+                </h2>
+                
+                <!-- Quote Section -->
+                <div class="relative">
+                    <!-- Decorative Quote Icon -->
+                    <svg class="w-10 h-10 mx-auto text-white/30 mb-4 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.2s_forwards]" 
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    
+                    <!-- Quote Text -->
+                    <blockquote class="text-lg md:text-xl text-white/90 italic font-serif leading-relaxed mb-6 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.3s_forwards]">
+                        "Tak perlu listrik untuk menyinari kehidupan. Baduy mengajarkan bahwa cahaya sejati berasal dari kesederhanaan dan keharmonisan."
+                    </blockquote>
+                    
+                    <!-- Decorative Line -->
+                    <div class="w-24 h-1 bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3] mx-auto rounded-full opacity-0 animate-[fadeInUp_0.8s_ease-out_0.4s_forwards]"></div>
+                </div>
+                
+                <!-- Scroll Indicator -->
+                <div class="mt-12 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.5s_forwards,bounce_2s_infinite_1s]">
+                    <svg class="w-8 h-8 mx-auto text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
                 </div>
             </div>
         </div>
@@ -156,13 +187,13 @@
                       
                       @foreach($categories as $key => $label)
                       <li class="flex-shrink-0">
-                          <a href="{{ route('artikel', ['genre' => request('genre') == $key ? 'all' : $key]) }}" 
+                          <a href="{{ route('artikel', ['genre' => $key]) }}" 
                             class="relative block px-6 py-3 rounded-lg transition-all duration-300 group
-                                    @if(request('genre') == $key || ($key == 'all' && !request('genre'))) 
-                                        bg-[#6d6d4f] text-white shadow-md
-                                    @else 
-                                        bg-white/80 text-gray-700
-                                    @endif">
+                                  @if(request('genre', 'all') == $key) 
+                                      bg-[#6d6d4f] text-white shadow-md
+                                  @else 
+                                      bg-white/80 text-gray-700
+                                  @endif">
                               <span class="relative z-10 font-medium whitespace-nowrap group-hover:text-white">
                                   {{ $label }}
                               </span>
@@ -246,8 +277,8 @@
                                 </h2>
 
                                 <p class="text-lg text-gray-600 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide">
-                                  {{ Str::limit($article->content, 400) }}
-                                </p>
+                                  {{ Str::limit(strip_tags($article->content), 400) }}
+                                </p>                                
 
                                 <a href="{{ route('artikel.show', $article->id) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors">
                                     Baca lebih banyak
@@ -281,7 +312,7 @@
                                           </svg>
                                       </span>
                                   @else
-                                      <a href="{{ $articles->previousPageUrl() }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->previousPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                           </svg>
@@ -297,7 +328,7 @@
                                                   {{ $page }}
                                               </span>
                                           @else
-                                              <a href="{{ $url }}" class="px-4 py-2 text-blue-700 hover:bg-gray-50 rounded-lg border border-blue-200 hover:border-blue-500 transition-all duration-200">
+                                              <a href="{{ $url }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 text-blue-700 hover:bg-gray-50 rounded-lg border border-blue-200 hover:border-blue-500 transition-all duration-200">
                                                   {{ $page }}
                                               </a>
                                           @endif
@@ -306,7 +337,7 @@
 
                                   {{-- Next Page Link --}}
                                   @if($articles->hasMorePages())
-                                      <a href="{{ $articles->nextPageUrl() }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->nextPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
                                           Selanjutnya
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -353,6 +384,7 @@
                         </ul>
                     </div>
                   </div>
+
               </div>
           </div>
         </div>
