@@ -25,7 +25,7 @@
 
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-900">
   <header class="header header_style_01 bg-gray-800 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
@@ -138,7 +138,7 @@
             <div class="max-w-3xl text-center">
                 <!-- Main Title -->
                 <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.1s_forwards]">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3]">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-yellow-400">
                         Welcome To Article
                     </span>
                 </h2>
@@ -152,7 +152,7 @@
                     </svg>
                     
                     <!-- Quote Text -->
-                    <blockquote class="text-lg md:text-xl text-white/90 italic font-serif leading-relaxed mb-6 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.3s_forwards]">
+                    <blockquote class="text-lg md:text-xl text-yellow-100 italic font-serif leading-relaxed mb-6 opacity-0 animate-[fadeInUp_0.8s_ease-out_0.3s_forwards]">
                         "Tak perlu listrik untuk menyinari kehidupan. Baduy mengajarkan bahwa cahaya sejati berasal dari kesederhanaan dan keharmonisan."
                     </blockquote>
                     
@@ -171,7 +171,7 @@
       </div>
 
         <!-- Section Kategori Horizontal -->
-        <div class="bg-gradient-to-r from-[#f9f9e1] to-[#f3f3c3] py-1 border-b border-gray-200 shadow-sm">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-900 py-1 border-b border-blue-300 shadow-sm">
           <div class="container mx-auto px-4">
               <div class="relative flex justify-center">
                   <ul class="flex space-x-10 overflow-x-auto py-2 scrollbar-hide mx-auto"> <!-- Changed space-x-1 to space-x-4 -->
@@ -213,11 +213,11 @@
         </div>
 
         <!-- section artikel -->
-        <div id="article-section" class="py-16 bg-[#fafaf7]">
+        <div id="article-section" class="py-16 bg-gray-900">
           <div class="container mx-auto px-4">
               <div class="flex flex-col lg:flex-row">
                   <!-- Main Content Area -->
-                  <div class="w-full lg:w-8/12 lg:pr-8">
+                  <div class="w-full lg:w-8/12 lg:pr-8 overflow-x-hidden">
                       <!-- Search Alerts -->
                       @if(request()->has('search'))
                           @if($articles->isEmpty())
@@ -257,11 +257,11 @@
                             <!-- Article Content -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center mb-2">
-                                    <h3 class="text-xl font-semibold text-blue-800 hover:text-blue-600 transition-colors">
+                                    <h3 class="text-xl font-semibold text-yellow-400 hover:text-yellow-100 transition-colors">
                                         {{ $article->user->name }}
                                     </h3>
-                                    <span class="mx-2 text-gray-400">•</span>
-                                    <time class="text-sm text-gray-500">
+                                    <span class="mx-2 text-white">•</span>
+                                    <time class="text-sm text-white">
                                         @if($article->created_at)
                                             {{ $article->created_at->format('F j, Y') }}
                                         @else
@@ -270,13 +270,13 @@
                                     </time>
                                 </div>
 
-                                <h2 class="text-2xl md:text-3xl font-bold mb-3 text-gray-800 group-hover:text-blue-700 transition-colors">
+                                <h2 class="text-2xl md:text-3xl font-bold mb-3 text-yellow-400 group-hover:text-yellow-100 transition-colors">
                                     <a href="{{ route('artikel.show', $article->id) }}" class="hover:underline decoration-2 underline-offset-4">
                                         {{ $article->title }}
                                     </a>
                                 </h2>
 
-                                <p class="text-lg text-gray-600 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide">
+                                <p class="text-lg text-gray-300 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide break-words overflow-hidden">
                                   {{ Str::limit(strip_tags($article->content), 400) }}
                                 </p>                                
 

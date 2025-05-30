@@ -89,7 +89,8 @@
     </nav>
 </header>
 
-    <div class="bg-[#fafaf7] py-[30px]">
+  <main class="flex-grow">
+    <div class="bg-gray-900 py-[30px]">
         <!-- Article Content -->
         <div class="container mx-auto px-4">
             <div class="flex flex-wrap">
@@ -105,29 +106,23 @@
                                         style="object-position: center 35%;">
                                 </div>
                                 
-                                <!-- Gradient overlay -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                                
-                                <!-- Shine effect -->
-                                <div class="absolute inset-0 overflow-hidden">
-                                    <div class="absolute top-0 left-[-100%] w-1/2 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent transform skew-x-[-20deg] group-hover:left-[150%] transition-all duration-1000"></div>
-                                </div>
-                                
-                                <!-- Content overlay -->
-                                <div class="absolute bottom-3 right-60 w-full p-8 text-white">
-                                    <div class="max-w-4xl mx-auto">
+                                <!-- Overlay: gradient + content -->
+                                <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
+                                    <div class="max-w-4xl text-yellow-400">
                                         <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
                                             <span class="text-sm font-medium">Featured Article</span>
                                         </div>
-                                        <h1 class="text-4xl md:text-5xl lg:text-5xl font-bold mb-2 text-shadow-lg">{{ $article->title }}</h1>
+                                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-shadow-lg break-words">
+                                            {{ $article->title }}
+                                        </h1>
                                     </div>
                                 </div>
                             </div>
                         @endif
                         <div class="flex flex-col">
                             <div class="order-3">
-                                <p class="italic text-[#9095a1]">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
-                                <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-[#444] my-[30px] text-justify">
+                                <p class="italic text-gray-300">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
+                                <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-gray-300 my-[30px] text-justify break-words overflow-hidden">
                                     {!! $article->content !!}
                                 </div>
                             </div>
@@ -137,6 +132,7 @@
             </div>
         </div>
     </div>
+  </main>
     
         <!-- Back to Top Button -->
         <div class="fixed right-[37px] bottom-[79px] z-[9999]">
