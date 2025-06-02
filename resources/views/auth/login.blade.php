@@ -7,6 +7,7 @@
     <title>Login - Baduy</title>
     <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-[url('{{asset('images/suasana1.jpg')}}')]  bg-cover bg-center bg-no-repeat">

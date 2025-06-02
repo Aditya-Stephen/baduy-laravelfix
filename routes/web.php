@@ -1,14 +1,16 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProfileController;
+
 
 // Halaman utama dengan data carousel dinamis
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
@@ -22,8 +24,19 @@ Route::get('/aboutUs', function () {
 })->name('aboutUs');
 
 // Artikel routes
-Route::get('/artikel', [ArtikelController::class, 'index'])->name('artikel');
-Route::get('/artikel/{id}', [ArtikelController::class, 'show'])->name('artikel.show');
+Route::controller(ArticleController::class)->group(function () {
+    // Menampilkan daftar artikel
+    Route::get('/artikel', 'index')->name('artikel');
+
+    Route::middleware('auth')->group(function () {
+        // Menyimpan artikel baru  
+        Route::post('/artikel', [ArticleController::class, 'store'])->name('artikel.store');    
+        // Menampilkan form tambah artikel
+        Route::get('/artikel/create', [ArticleController::class, 'create'])->name('artikel.create');
+    });
+    // nampilin detail artikel
+    Route::get('/artikel/{id}', 'show')->name('artikel.show');
+});
 
 // Auth routes
 Route::get('/login', function () {
@@ -57,6 +70,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carousels', [CarouselController::class, 'store'])->name('carousels.store');
     Route::put('/carousels/{carousel}', [CarouselController::class, 'update'])->name('carousels.update');
     Route::delete('/carousels/{carousel}', [CarouselController::class, 'destroy'])->name('carousels.destroy');
+
+    // Artikel Approval Routes
+    Route::post('/admin/articles/{id}/approve', [AdminController::class, 'approveArticle']);
+    Route::post('/admin/articles/{id}/reject', [AdminController::class, 'rejectArticle']);
+    Route::get('/admin/preview/{id}', [ArticleController::class, 'adminPreview'])->name('admin.articles.preview');
+
+    // edit profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
 });
 
 // CATATAN: Setelah route /admin bisa diakses, baru aktifkan middleware admin
