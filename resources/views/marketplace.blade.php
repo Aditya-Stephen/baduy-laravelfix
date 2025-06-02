@@ -2,108 +2,125 @@
 <html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Baduy Product</title>
-    <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Baduy Product</title>
+  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body class="flex flex-col min-h-screen bg-gray-900 text-white">
-    <header class="header header_style_01 bg-gray-800 py-2">
-        <nav class="container mx-auto px-4">
-          <div class="flex items-center justify-between">
+  <header
+    x-data="{ scrolled: false, mobileMenuOpen: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+    :class="scrolled
+    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+    class="sticky top-0 z-50 transition-colors duration-300 py-2">
+    <nav class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <a href="{{ url('/') }}" class="flex items-center">
+            <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+          </a>
+        </div>
 
-            <!-- Logo (kiri) -->
-            <div class="flex-shrink-0">
-              <a href="{{ url('/') }}" class="flex items-center">
-                <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+        <!-- Hamburger menu -->
+        <div class="md:hidden">
+          <button
+            type="button"
+            class="text-white hover:text-gray-300 focus:outline-none"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            aria-label="Toggle menu">
+            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Nav links -->
+        <div
+          :class="mobileMenuOpen
+          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+          : 'hidden md:flex items-center space-x-6'"
+          class="md:flex">
+          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
+
+          @auth
+          <div class="relative" x-data="{ open: false }">
+            <button
+              @click="open = !open"
+              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+              aria-haspopup="true"
+              :aria-expanded="open.toString()">
+              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              {{ Auth::user()->name }}
+              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div
+              x-show="open"
+              @click.away="open = false"
+              x-transition
+              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+              style="display: none;">
+              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+                Edit Profile
               </a>
-            </div>
-            
-            <!-- Hamburger menu untuk mobile -->
-            <div class="md:hidden">
-              <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
-                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
-    
-            <!-- Menu navigasi (kanan) -->
-            <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-              <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-              <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-              <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-              <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
-    
-              <!-- Login/Logout -->
-              @auth
-              <div class="relative" x-data="{ open: false }">
-                  <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                      @if(Auth::user()->profile_photo_path)
-                          <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
-                      @else
-                          <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
-                              {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                          </div>
-                      @endif
-                      {{ Auth::user()->name }}
-                      <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                      </svg>
-                  </button>
-                  <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                      <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                          Edit Profile
-                      </a>
-                      <form method="POST" action="{{ route('logout') }}">
-                          @csrf
-                          <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                              Logout
-                          </button>
-                      </form>
-                  </div>
-              </div>
-              @else
-              <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
-              @endauth
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                  Logout
+                </button>
+              </form>
             </div>
           </div>
-        </nav>
-    </header>
-
-    <main class="flex-grow">
-        <div class="container mx-auto">
-            <section class="text-center py-12 bg-gray-800">
-                <h1 class="text-4xl font-bold text-orange-400">Produk Suku Baduy</h1>
-                <p class="text-gray-300 mt-2">Produk khas Suku Baduy yang dibuat secara tradisional dengan bahan alami.</p>
-            </section>
-
-            <!-- Grid produk dinamis -->
-            <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-                @forelse($products as $product)
-                <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded-lg w-full h-40 object-cover">
-                    <h2 class="text-lg font-semibold mt-4">{{ $product->name }}</h2>
-                    <p class="text-gray-300">{{ Str::limit($product->description, 100) }}</p>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-yellow-400 font-bold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                        <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Detail</a>
-                    </div>
-                </div>
-                @empty
-                <div class="col-span-3 text-center py-8">
-                    <p>Belum ada produk tersedia.</p>
-                </div>
-                @endforelse
-            </section>
+          @else
+          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
+          @endauth
         </div>
-    </main>
+      </div>
+    </nav>
+  </header>
 
-    <footer class="bg-[#262828] text-white py-8 mt-16">
+  <main class="flex-grow">
+    <div class="container mx-auto">
+      <section class="text-center py-12 bg-gray-800">
+        <h1 class="text-4xl font-bold text-orange-400">Produk Suku Baduy</h1>
+        <p class="text-gray-300 mt-2">Produk khas Suku Baduy yang dibuat secara tradisional dengan bahan alami.</p>
+      </section>
+
+      <!-- Grid produk dinamis -->
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        @forelse($products as $product)
+        <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
+          <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded-lg w-full h-40 object-cover">
+          <h2 class="text-lg font-semibold mt-4">{{ $product->name }}</h2>
+          <p class="text-gray-300">{{ Str::limit($product->description, 100) }}</p>
+          <div class="mt-4 flex justify-between items-center">
+            <span class="text-yellow-400 font-bold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+            <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">Detail</a>
+          </div>
+        </div>
+        @empty
+        <div class="col-span-3 text-center py-8">
+          <p>Belum ada produk tersedia.</p>
+        </div>
+        @endforelse
+      </section>
+    </div>
+  </main>
+
+  <footer class="bg-[#262828] text-white py-8 mt-16">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
 
@@ -143,38 +160,39 @@
         © Baduy Official. All rights reserved.
       </div>
     </div>
-    </footer>
+  </footer>
 
-    <!-- JS FILES -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const button = document.getElementById('mobile-menu-button');
-            const menu = document.getElementById('navbar-menu');
+  <!-- JS FILES -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const button = document.getElementById('mobile-menu-button');
+      const menu = document.getElementById('navbar-menu');
 
-            button.addEventListener('click', function() {
-                menu.classList.toggle('hidden');
-                menu.classList.toggle('flex');
-                menu.classList.toggle('flex-col');
-                menu.classList.toggle('absolute');
-                menu.classList.toggle('top-16');
-                menu.classList.toggle('left-0');
-                menu.classList.toggle('w-full');
-                menu.classList.toggle('text-left');
-                menu.classList.toggle('bg-gray-800');
-                menu.classList.toggle('p-4');
-                menu.classList.toggle('rounded');
-                menu.classList.toggle('shadow-lg');
-                menu.classList.toggle('z-10');
+      button.addEventListener('click', function() {
+        menu.classList.toggle('hidden');
+        menu.classList.toggle('flex');
+        menu.classList.toggle('flex-col');
+        menu.classList.toggle('absolute');
+        menu.classList.toggle('top-16');
+        menu.classList.toggle('left-0');
+        menu.classList.toggle('w-full');
+        menu.classList.toggle('text-left');
+        menu.classList.toggle('bg-gray-800');
+        menu.classList.toggle('p-4');
+        menu.classList.toggle('rounded');
+        menu.classList.toggle('shadow-lg');
+        menu.classList.toggle('z-10');
 
-                // Styling untuk item menu
-                const menuItems = menu.querySelectorAll('a');
-                menuItems.forEach(item => {
-                    item.classList.toggle('block');
-                    item.classList.toggle('mb-2');
-                    item.classList.toggle('pl-2');
-                });
-            });
+        // Styling untuk item menu
+        const menuItems = menu.querySelectorAll('a');
+        menuItems.forEach(item => {
+          item.classList.toggle('block');
+          item.classList.toggle('mb-2');
+          item.classList.toggle('pl-2');
         });
-    </script>
+      });
+    });
+  </script>
 </body>
+
 </html>

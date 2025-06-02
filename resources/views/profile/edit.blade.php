@@ -2,205 +2,451 @@
 <html lang="en">
 
 <head>
-  <!-- Basic -->
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <!-- Site Metas -->
-  <title>Artikel Page Baduy</title>
-  <meta name="keywords" content="">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <!-- font tambahan -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Site Icons -->
-  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edit Profile - Baduy</title>
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cropperjs library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <!-- Alpine.js and Tailwind -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 </head>
 
-<body class="bg-gray-100">
-  <header class="header header_style_01 bg-gray-800 py-2">
-    <nav class="container mx-auto px-4">
-      <div class="flex items-center justify-between">
-        <!-- Logo (kiri) -->
-        <div class="flex-shrink-0">
-          <a href="{{ url('/') }}" class="flex items-center">
-            <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
-          </a>
-        </div>
-
-        <!-- Hamburger menu untuk mobile -->
-        <div class="md:hidden">
-          <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Menu navigasi (kanan) -->
-        <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
-
-          <!-- Login/Logout -->
-          @auth
-          <div class="relative" x-data="{ open: false }">
-              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                  @if(Auth::user()->profile_photo_path)
-                      <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
-                  @else
-                      <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
-                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                      </div>
-                  @endif
-                  {{ Auth::user()->name }}
-                  <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-              </button>
-              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                  <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                      Edit Profile
-                  </a>
-                  <form method="POST" action="{{ route('logout') }}">
-                      @csrf
-                      <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                          Logout
-                      </button>
-                  </form>
-              </div>
-          </div>
-          @else
-          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
-          @endauth
-        </div>
-      </div>
-    </nav>
-  </header>
-
-
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-4xl mx-auto">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h1 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h1>
-                
-                @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                    <p>{{ session('success') }}</p>
+<body class="bg-gray-900 text-white" x-data="{ mobileMenuOpen: false }">
+    <header
+        x-data="{ scrolled: false, mobileMenuOpen: false }"
+        x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+        :class="scrolled
+    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+        class="sticky top-0 z-50 transition-colors duration-300 py-2">
+        <nav class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="{{ url('/') }}" class="flex items-center">
+                        <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+                    </a>
                 </div>
-                @endif
 
-                <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
+                <!-- Hamburger menu -->
+                <div class="md:hidden">
+                    <button
+                        type="button"
+                        class="text-white hover:text-gray-300 focus:outline-none"
+                        @click="mobileMenuOpen = !mobileMenuOpen"
+                        aria-label="Toggle menu">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
 
-                    <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="profile_photo">
-                            Profile Photo
-                        </label>
-                        <div class="flex items-center">
-                            @if(auth()->user()->profile_photo_path)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}" 
-                                    class="w-20 h-20 rounded-full object-cover mr-4">
-                            @else
-                                <div class="w-20 h-20 rounded-full bg-gray-300 mr-4 flex items-center justify-center text-gray-600 text-2xl font-bold">
-                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                                </div>
-                            @endif
-                            <input type="file" name="profile_photo" id="profile_photo" 
-                                class="border rounded py-2 px-3 text-gray-700">
+                <!-- Nav links -->
+                <div
+                    :class="mobileMenuOpen
+          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+          : 'hidden md:flex items-center space-x-6'"
+                    class="md:flex">
+                    <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+                    <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+                    <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+                    <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
+
+                    @auth
+                    <div class="relative" x-data="{ open: false }">
+                        <button
+                            @click="open = !open"
+                            class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+                            :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+                            aria-haspopup="true"
+                            :aria-expanded="open.toString()">
+                            <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+                            {{ Auth::user()->name }}
+                            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div
+                            x-show="open"
+                            @click.away="open = false"
+                            x-transition
+                            class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+                            style="display: none;">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+                                Edit Profile
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                                    Logout
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                            Full Name
-                        </label>
-                        <input class="border rounded w-full py-2 px-3 text-gray-700" 
-                            id="name" name="name" type="text" 
-                            value="{{ old('name', auth()->user()->name) }}" required>
-                    </div>
+                    @else
+                    <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
+                    @endauth
+                </div>
+            </div>
+        </nav>
+    </header>
 
-                    <div class="flex justify-end">
-                        <button type="submit" 
-                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Update Profile
-                        </button>
-                    </div>
-                </form>
+
+    <main class="py-12">
+        <div class="container mx-auto px-4">
+            <!-- Back to home link -->
+            <div class="mb-6 max-w-4xl mx-auto">
+                <a href="{{ url('/') }}" class="inline-flex items-center text-gray-300 hover:text-yellow-400 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Back to Home
+                </a>
             </div>
 
-            <div class="bg-white rounded-lg shadow p-6 mt-8">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">Your Articles</h2>
-                
-                @if($articles->isEmpty())
-                    <p class="text-gray-600">You haven't submitted any articles yet.</p>
-                @else
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white">
-                            <thead>
-                                <tr>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Title
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Status
-                                    </th>
-                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                        Date
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($articles as $article)
-                                <tr>
-                                    <td class="py-2 px-4 border-b border-gray-200">
-                                        {{ Str::limit($article->title, 40) }}
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-gray-200">
-                                        @if($article->status === 'approved')
-                                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+            <div class="max-w-4xl mx-auto" x-data="profileEditor()">
+                <!-- Profile Edit Form -->
+                <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+                    <div class="bg-blue-900 p-4">
+                        <h1 class="text-2xl font-bold text-yellow-400">Edit Your Profile</h1>
+                    </div>
+
+                    @if(session('success'))
+                    <div class="bg-green-600/80 text-white p-4 m-4 rounded">
+                        <p>{{ session('success') }}</p>
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="p-6">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="cropped_photo" id="cropped_photo_data">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <!-- Left: Profile Photo -->
+                            <div class="md:col-span-1 flex flex-col items-center">
+                                <!-- Current photo or placeholder -->
+                                <div class="mb-4 w-40">
+                                    @if(auth()->user()->profile_photo_path)
+                                    <img src="{{ asset('storage/' . auth()->user()->profile_photo_path) }}"
+                                        class="w-full h-auto aspect-[3/4] rounded-lg border-2 border-yellow-400 object-cover">
+                                    @else
+                                    <div class="w-full aspect-[3/4] bg-gray-700 rounded-lg flex items-center justify-center text-gray-400 text-5xl font-bold">
+                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                    </div>
+                                    @endif
+                                </div>
+
+                                <!-- Upload button -->
+                                <button type="button"
+                                    @click="openFileInput"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition">
+                                    Choose New Photo
+                                </button>
+                                <input type="file" id="profile_photo" @change="fileChosen" class="hidden" accept="image/*">
+                                <p class="text-sm text-gray-400 mt-2">Photo will be cropped to 3:4 ratio</p>
+
+                                <!-- Preview of cropped image -->
+                                <div x-show="croppedPreview" class="mt-4 w-32 aspect-[3/4]">
+                                    <p class="text-sm text-gray-300 mb-2">Preview:</p>
+                                    <img :src="croppedPreview" class="w-full h-auto rounded-lg border border-blue-500 object-cover">
+                                </div>
+                            </div>
+
+                            <!-- Right: Form Fields -->
+                            <div class="md:col-span-2">
+                                <div class="mb-6">
+                                    <label class="block text-gray-300 text-sm font-medium mb-2" for="name">
+                                        Full Name
+                                    </label>
+                                    <input class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        id="name" name="name" type="text"
+                                        value="{{ old('name', auth()->user()->name) }}" required>
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="block text-gray-300 text-sm font-medium mb-2" for="email">
+                                        Email Address
+                                    </label>
+                                    <input class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-3 text-gray-300 focus:outline-none"
+                                        id="email" type="email"
+                                        value="{{ auth()->user()->email }}" disabled>
+                                    <p class="text-xs text-gray-400 mt-2">Email cannot be changed</p>
+                                </div>
+
+                                <div class="flex justify-end">
+                                    <button type="submit"
+                                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded font-semibold transition">
+                                        Update Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Your Articles Section -->
+                <div class="mt-10 bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
+                    <div class="bg-blue-900 p-4 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-yellow-400">Your Articles</h2>
+                        <a href="{{ url('/artikel/create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            New Article
+                        </a>
+                    </div>
+
+                    <div class="p-6">
+                        @if($articles->isEmpty())
+                        <div class="text-center py-10 bg-gray-700/30 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8m-2 12h-7a2 2 0 01-2-2v-4m11 0a1 1 0 001-1v-1a1 1 0 00-1-1h-1M8 12H6a1 1 0 01-1-1V9a1 1 0 011-1h2" />
+                            </svg>
+                            <p class="text-gray-400 text-lg">You haven't submitted any articles yet.</p>
+                            <a href="{{ url('/artikel/create') }}" class="mt-4 inline-block text-blue-400 hover:text-blue-300">
+                                Write your first article →
+                            </a>
+                        </div>
+                        @else
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-700">
+                                <thead>
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                            Title
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                            Date
+                                        </th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-700 bg-gray-800/50">
+                                    @foreach($articles as $article)
+                                    <tr class="hover:bg-gray-700/50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-200">{{ Str::limit($article->title, 40) }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            @if($article->status === 'approved')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                 Approved
                                             </span>
-                                        @elseif($article->status === 'pending')
-                                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
-                                                Pending Review
+                                            @elseif($article->status === 'pending')
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                Pending
                                             </span>
-                                        @else
-                                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                                            @else
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                                 Rejected
                                             </span>
-                                            @if($article->rejection_reason)
-                                                <p class="text-xs text-gray-600 mt-1">
-                                                    Reason: {{ $article->rejection_reason }}
-                                                </p>
                                             @endif
-                                        @endif
-                                    </td>
-                                    <td class="py-2 px-4 border-b border-gray-200">
-                                        {{ $article->created_at->format('M d, Y') }}
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                            {{ $article->created_at->format('M d, Y') }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="{{ url('/artikel/'.$article->id) }}" class="text-blue-400 hover:text-blue-300 mr-3">View</a>
+                                            @if($article->status !== 'approved')
+                                            <a href="{{ url('/artikel/'.$article->id.'/edit') }}" class="text-yellow-400 hover:text-yellow-300">Edit</a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @if($article->status === 'rejected' && $article->rejection_reason)
+                                    <tr class="bg-gray-900/50">
+                                        <td colspan="4" class="px-6 py-2 text-xs text-red-400 italic">
+                                            <strong>Rejection reason:</strong> {{ $article->rejection_reason }}
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @endif
                     </div>
-                @endif
+                </div>
             </div>
         </div>
-    </div>
 
-    @vite(['resources/js/app.js'])
+        <!-- Image Cropping Modal -->
+        <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center hidden">
+            <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-yellow-400">Crop Your Profile Photo</h3>
+                    <button id="closeCropModal" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <div class="bg-gray-900 rounded overflow-hidden">
+                        <img id="cropperImage" class="max-w-full">
+                    </div>
+                    <p class="text-gray-300 text-xs mt-2">Drag or resize the crop area to fit a 3:4 ratio</p>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelCrop" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition">
+                        Cancel
+                    </button>
+                    <button id="applyCrop" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition">
+                        Apply
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+     <footer class="bg-[#262828] text-white py-8 mt-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+
+        <!-- Left: Logo / Title -->
+        <div class="flex items-center space-x-4 text-center md:text-left">
+          <img src="{{ asset('images/logobadui1.webp') }}" alt="Baduy Logo" class="me-10 w-10 h-10 object-contain">
+          <div class="text-center md:text-left">
+            <h2 class="text-sm font-bold text-yellow-400">Suku Baduy</h2>
+            <p class="text-xs mt-1 text-gray-300">Preserving Culture. Promoting Tradition.</p>
+          </div>
+        </div>
+
+        <!-- Center: Navigation -->
+        <div class="space-x-4 text-sm">
+          <a href="{{ url('/') }}" class="hover:text-yellow-400 transition">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="hover:text-yellow-400 transition">About</a>
+          <a href="{{ url('/marketplace') }}" class="hover:text-yellow-400 transition">Products</a>
+          <a href="{{ url('/artikel') }}" class="hover:text-yellow-400 transition">Article</a>
+        </div>
+
+        <!-- Right: Social Media -->
+        <div class="flex space-x-4">
+          <a href="#" class="hover:text-yellow-400 transition">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M22 4.01c-.77.34-1.6.56-2.46.66a4.26 4.26 0 0 0 1.88-2.36c-.83.49-1.74.85-2.7 1.04a4.24 4.24 0 0 0-7.22 3.87 12.01 12.01 0 0 1-8.73-4.43 4.25 4.25 0 0 0 1.31 5.67 4.21 4.21 0 0 1-1.92-.53v.05a4.25 4.25 0 0 0 3.4 4.17 4.28 4.28 0 0 1-1.91.07 4.25 4.25 0 0 0 3.97 2.95 8.5 8.5 0 0 1-5.28 1.82c-.34 0-.68-.02-1.01-.06a12.03 12.03 0 0 0 6.5 1.91c7.8 0 12.07-6.46 12.07-12.07 0-.18 0-.35-.01-.53A8.65 8.65 0 0 0 22 4.01z" />
+            </svg>
+          </a>
+          <a href="#" class="hover:text-yellow-400 transition">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2.04c-5.52 0-10 4.47-10 9.98 0 4.41 3.59 8.08 8.27 8.98v-6.36H7.9v-2.62h2.37V9.57c0-2.35 1.38-3.65 3.5-3.65 1.02 0 2.1.18 2.1.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.45v1.74h2.59l-.41 2.62h-2.18v6.36C18.41 20.1 22 16.43 22 11.98c0-5.5-4.48-9.97-10-9.97z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-700 mt-8 pt-4 text-center text-sm text-gray-400">
+        © Baduy Official. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('profileEditor', () => ({
+                cropper: null,
+                croppedPreview: null,
+
+                openFileInput() {
+                    document.getElementById('profile_photo').click();
+                },
+
+                fileChosen(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    // Show modal
+                    const modal = document.getElementById('cropperModal');
+                    modal.classList.remove('hidden');
+
+                    // Setup cropper
+                    const cropperImage = document.getElementById('cropperImage');
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        cropperImage.src = e.target.result;
+
+                        // Initialize cropper when image is loaded
+                        cropperImage.onload = () => {
+                            if (this.cropper) {
+                                this.cropper.destroy();
+                            }
+
+                            this.cropper = new Cropper(cropperImage, {
+                                aspectRatio: 3 / 4,
+                                viewMode: 1,
+                                dragMode: 'move',
+                                autoCropArea: 0.8,
+                                restore: false,
+                                guides: true,
+                                center: true,
+                                highlight: false,
+                                cropBoxMovable: true,
+                                cropBoxResizable: true,
+                                toggleDragModeOnDblclick: false
+                            });
+                        };
+                    };
+
+                    reader.readAsDataURL(file);
+
+                    // Setup modal buttons
+                    document.getElementById('applyCrop').onclick = () => {
+                        if (!this.cropper) return;
+
+                        const canvas = this.cropper.getCroppedCanvas({
+                            width: 300,
+                            height: 400
+                        });
+
+                        this.croppedPreview = canvas.toDataURL('image/jpeg');
+                        document.getElementById('cropped_photo_data').value = this.croppedPreview;
+
+                        modal.classList.add('hidden');
+                        this.cropper.destroy();
+                        this.cropper = null;
+                    };
+
+                    document.getElementById('cancelCrop').onclick = document.getElementById('closeCropModal').onclick = () => {
+                        modal.classList.add('hidden');
+                        if (this.cropper) {
+                            this.cropper.destroy();
+                            this.cropper = null;
+                        }
+                        document.getElementById('profile_photo').value = '';
+                    };
+                },
+
+                init() {
+                    // Mobile menu toggle
+                    Alpine.store('mobileMenu', {
+                        open: false,
+                        toggle() {
+                            this.open = !this.open;
+                        },
+                        close() {
+                            this.open = false;
+                        }
+                    });
+                }
+            }));
+        });
+    </script>
 </body>
 
 </html>

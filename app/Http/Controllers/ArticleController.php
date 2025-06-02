@@ -81,26 +81,133 @@ class ArticleController extends Controller
             return redirect()->route('login');
         }
 
-        // buat gambar yang di upload
-        $imagePath = null;
-        if ($request->hasFile('header_image')) {
-            $imagePath = $request->file('header_image')->store('article_images', 'public');
-        }
-
-        Article::create([
+        $article = new Article([
             'user_id' => auth()->id(),
             'title' => $validatedData['title'],
             'genre' => $validatedData['genre'],
             'content' => $validatedData['content'],
-            'header_image' => $imagePath,
-            'status' => 'pending',  
+            'status' => 'pending',
             'created_at' => now()
         ]);
 
+        // Handle image upload - store both path and binary data
+        if ($request->hasFile('header_image')) {
+            $file = $request->file('header_image');
+            
+            // Store path for compatibility
+            $imagePath = $file->store('article_images', 'public');
+            $article->header_image = $imagePath;
+            
+            // Store binary data
+            $article->image_data = base64_encode(file_get_contents($file->getRealPath()));
+        }
+
+        $article->save();
+        
         Cache::forget('article_counts_by_category');
 
         return redirect()->route('artikel')
             ->with('success', 'Artikel berhasil diajukan! Menunggu persetujuan admin.');
+    }
+    
+    // Edit artikel
+    public function edit($id)
+    {
+        $article = Article::where('id', $id)->firstOrFail();
+        
+        // Only allow editing by author or admin
+        if (auth()->id() !== $article->user_id && !(auth()->user() && auth()->user()->isAdmin)) {
+            abort(403);
+        }
+        
+        // Don't allow editing approved articles (except by admin)
+        if ($article->status === 'approved' && !auth()->user()->isAdmin) {
+            return redirect()->route('artikel.show', $article->id)
+                ->with('error', 'Artikel yang sudah disetujui tidak dapat diedit.');
+        }
+        
+        return view('artikel.edit', compact('article'));
+    }
+    
+    // Update artikel
+    public function update(Request $request, $id)
+    {
+        $article = Article::where('id', $id)->firstOrFail();
+        
+        // Only allow updates by author or admin
+        if (auth()->id() !== $article->user_id && !auth()->user()->isAdmin) {
+            abort(403);
+        }
+        
+        // Don't allow editing approved articles (except by admin)
+        if ($article->status === 'approved' && !auth()->user()->isAdmin) {
+            return redirect()->route('artikel.show', $article->id)
+                ->with('error', 'Artikel yang sudah disetujui tidak dapat diedit.');
+        }
+        
+        $validatedData = $request->validate([
+            'title' => 'required|max:255',
+            'genre' => 'required|in:Budaya & Tradisi,Kearifan Lokal,Mitos & Kepercayaan,Lokasi',
+            'content' => 'required',
+            'header_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048'
+        ]);
+        
+        $article->title = $validatedData['title'];
+        $article->genre = $validatedData['genre'];
+        $article->content = $validatedData['content'];
+        
+        // If article was rejected and now being resubmitted
+        if ($article->status === 'rejected') {
+            $article->status = 'pending';
+            $article->rejection_reason = null;
+        }
+        
+        // Handle image upload - update both path and binary data
+        if ($request->hasFile('header_image')) {
+            // Delete old image if exists
+            if ($article->header_image) {
+                Storage::disk('public')->delete($article->header_image);
+            }
+            
+            $file = $request->file('header_image');
+            
+            // Store path for compatibility
+            $imagePath = $file->store('article_images', 'public');
+            $article->header_image = $imagePath;
+            
+            // Store binary data
+            $article->image_data = base64_encode(file_get_contents($file->getRealPath()));
+        }
+        
+        $article->save();
+        
+        Cache::forget('article_counts_by_category');
+        
+        return redirect()->route('profile.edit')
+            ->with('success', 'Artikel berhasil diperbarui dan sedang menunggu persetujuan.');
+    }
+    
+    // Delete artikel
+    public function destroy($id)
+    {
+        $article = Article::findOrFail($id);
+        
+        // Only allow deletion by author or admin
+        if (auth()->id() !== $article->user_id && !auth()->user()->isAdmin) {
+            abort(403);
+        }
+        
+        // Delete image file if exists
+        if ($article->header_image) {
+            Storage::disk('public')->delete($article->header_image);
+        }
+        
+        $article->delete();
+        
+        Cache::forget('article_counts_by_category');
+        
+        return redirect()->route('profile.edit')
+            ->with('success', 'Artikel berhasil dihapus.');
     }
 
     public function adminPreview($id)

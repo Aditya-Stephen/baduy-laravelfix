@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+
 
 class User extends Authenticatable
 {
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory;
-    
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,7 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'profile_photo_path'
+        'profile_photo_path',
+        'profile_photo_data',
     ];
 
     /**
@@ -37,8 +33,17 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'two_factor_recovery_codes',
-        'two_factor_secret',
+        'profile_photo_data', // hide raw photo data in API response
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
 
     /**
@@ -48,10 +53,43 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'is_admin',
     ];
 
     /**
-     * Get the articles for the user.
+     * Get the URL of the user's profile photo.
+     *
+     * @return string
+     */
+    public function getProfilePhotoUrlAttribute(): string
+    {
+        if ($this->profile_photo_data) {
+            // Return base64 encoded image data URI
+            return 'data:image/jpeg;base64,' . $this->profile_photo_data;
+        }
+
+        if ($this->profile_photo_path) {
+            // Return URL to stored file
+            return asset('storage/' . $this->profile_photo_path);
+        }
+
+        // Return default avatar URL if no photo available
+        return $this->defaultProfilePhotoUrl();
+    }
+
+    /**
+     * Get the default profile photo URL.
+     *
+     * @return string
+     */
+    protected function defaultProfilePhotoUrl(): string
+    {
+        $name = urlencode($this->name ?: 'User');
+        return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=EBF4FF";
+    }
+
+    /**
+     * User has many articles.
      */
     public function articles()
     {
@@ -59,15 +97,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the attributes that should be cast.
+     * Determine if the user is admin.
      *
-     * @return array<string, string>
+     * @return bool
      */
-    protected function casts(): array
+    public function getIsAdminAttribute(): bool
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        // Example admin logic; update as needed
+        return $this->id === 1;
     }
 }

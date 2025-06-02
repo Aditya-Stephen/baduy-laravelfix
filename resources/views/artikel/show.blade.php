@@ -100,13 +100,13 @@
                             <div class="relative group overflow-hidden rounded-xl shadow-2xl mb-10 transition-all duration-500 hover:shadow-3xl hover:rounded-2xl">
                                 <!-- Image with parallax effect -->
                                 <div class="h-[400px] md:h-[500px] overflow-hidden">
-                                    <img src="{{ $article->header_image ? (filter_var($article->header_image, FILTER_VALIDATE_URL) ? $article->header_image : asset('storage/'.$article->header_image)) : '' }}" 
+                                    <img src="{{ $article->header_image ? 'data:image/jpeg;base64,'.$article->header_image : ($article->header_image_path ? asset('storage/'.$article->header_image_path) : '') }}" 
                                         alt="Header Image"
                                         class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
                                         style="object-position: center 35%;">
                                 </div>
                                 
-                                <!-- Overlay: gradient + content -->
+                                <!-- Overlay content remains the same -->
                                 <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
                                     <div class="max-w-4xl text-yellow-400">
                                         <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
