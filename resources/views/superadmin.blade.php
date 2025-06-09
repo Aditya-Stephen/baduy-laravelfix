@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Baduy</title>
+    <title>Super Admin Dashboard - Baduy</title>
     <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -17,7 +17,7 @@
         <div class="container mx-auto flex justify-between items-center p-4">
             <div class="flex items-center space-x-4">
                 <img src="{{ asset('images/logobadui1.webp') }}" class="h-10 w-auto" alt="Baduy Logo">
-                <h1 class="text-xl font-bold">Admin Dashboard</h1>
+                <h1 class="text-xl font-bold">Super Admin Dashboard</h1>
             </div>
             <div class="flex items-center space-x-4">
                 <span>Selamat Datang, {{ Auth::user()->name }}</span>
@@ -36,7 +36,7 @@
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Sidebar -->
             <div class="w-full md:w-1/4 bg-white rounded-lg shadow p-4">
-                <h2 class="text-lg font-semibold mb-4 text-gray-800">Menu Admin</h2>
+                <h2 class="text-lg font-semibold mb-4 text-gray-800">Menu Super Admin</h2>
                 <nav>
                     <ul class="space-y-2">
                         <li>
@@ -63,6 +63,14 @@
                                 Kelola Artikel
                             </a>
                         </li>
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-4 rounded"
+                                :class="{ 'bg-gray-800 text-white': activeTab === 'adminUsers', 'hover:bg-gray-200 text-gray-800': activeTab !== 'adminUsers' }"
+                                @click.prevent="activeTab = 'adminUsers'">
+                                Kelola Admin
+                            </a>
+                        </li>
 
                         <!-- divider -->
                         <li class="border-t border-gray-200 my-3 pt-3">
@@ -78,7 +86,7 @@
             </div>
 
             <!-- Main Panel -->
-            <div class="w-full md:w-3/4" x-data="{ showAddProductModal: false, showEditProductModal: false, showAddCarouselModal: false, showEditCarouselModal: false, editProductId: null, editCarouselId: null }">
+            <div class="w-full md:w-3/4" x-data="{ showAddProductModal: false, showEditProductModal: false, showAddCarouselModal: false, showEditCarouselModal: false, editProductId: null, editCarouselId: null, showAddAdminModal: false }">
                 <!-- Products Tab -->
                 <div x-show="activeTab === 'products'">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
@@ -92,7 +100,7 @@
                         </div>
 
                         <!-- Success product Message -->
-                        @if(session('success') && !session('article_success'))
+                        @if(session('success') && !session('article_success') && !session('admin_success'))
                         <div x-show="activeTab === 'products'" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
                             <p>{{ session('success') }}</p>
                         </div>
@@ -353,6 +361,128 @@
                             </div>
                             @endif
                         </div>
+                    </div>
+                </div>
+
+                <!-- Admin Users Management Tab -->
+                <div x-show="activeTab === 'adminUsers'">
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <!-- Notifikasi Admin -->
+                        @if(session('admin_success'))
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p>{{ session('admin_success') }}</p>
+                        </div>
+                        @endif
+                        
+                        @if(session('error'))
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                            <p>{{ session('error') }}</p>
+                        </div>
+                        @endif
+
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-800">Kelola User & Admin</h2>
+                            <button type="button"
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+                                @click="showAddAdminModal = true">
+                                Tambah Admin Baru
+                            </button>
+                        </div>
+
+                        <!-- Admin Users Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border border-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 border">Foto</th>
+                                        <th class="px-4 py-3 border">Nama</th>
+                                        <th class="px-4 py-3 border">Email</th>
+                                        <th class="px-4 py-3 border">Role</th>
+                                        <th class="px-4 py-3 border">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($users ?? [] as $user)
+                                    <tr>
+                                        <td class="px-4 py-3 border">
+                                            <div class="flex-shrink-0 h-10 w-10 mx-auto">
+                                                <img class="h-10 w-10 rounded-full object-cover" 
+                                                     src="{{ $user->profile_photo_url }}" 
+                                                     alt="{{ $user->name }}">
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 border">{{ $user->name }}</td>
+                                        <td class="px-4 py-3 border">{{ $user->email }}</td>
+                                        <td class="px-4 py-3 border">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {{ $user->role == 'admin' ? 'bg-purple-100 text-purple-800' : 
+                                                  ($user->role == 'superadmin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 border">
+                                            @if($user->role != 'superadmin')
+                                            <form method="POST" action="{{ route('roles.update', $user->id) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="flex items-center space-x-2 justify-center">
+                                                    <select name="role" class="border border-gray-300 rounded text-sm px-2 py-1 text-gray-700">
+                                                        <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
+                                                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                                    </select>
+                                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            @else
+                                            <span class="text-xs text-gray-500 italic">Superadmin</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-3 text-center border">Belum ada data pengguna</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Admin Modal -->
+                <div x-show="showAddAdminModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div class="bg-white rounded-lg p-8 max-w-md w-full">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Tambah Admin Baru</h3>
+                            <button type="button" class="text-gray-600 hover:text-gray-800"
+                                @click="showAddAdminModal = false">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form action="{{ route('roles.promote') }}" method="POST">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Pengguna:</label>
+                                <input type="email" id="email" name="email" placeholder="Masukkan email pengguna yang akan dijadikan admin" 
+                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <p class="text-xs text-gray-500 mt-1">Pengguna harus sudah terdaftar dalam sistem</p>
+                            </div>
+
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showAddAdminModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                                    Jadikan Admin
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -49,8 +50,7 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
     
-        // Admin bisa lihat semua status, user hanya lihat yang approved
-        if (auth()->user() && request()->is('admin/*')) {
+        if (Auth::check() && request()->is('admin/*')) {
             return view('artikel.show', compact('article'));
         }
         
@@ -77,12 +77,12 @@ class ArticleController extends Controller
             'header_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048'       
         ]);
 
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
 
         $article = new Article([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'title' => $validatedData['title'],
             'genre' => $validatedData['genre'],
             'content' => $validatedData['content'],
@@ -116,12 +116,12 @@ class ArticleController extends Controller
         $article = Article::where('id', $id)->firstOrFail();
         
         // Only allow editing by author or admin
-        if (auth()->id() !== $article->user_id && !(auth()->user() && auth()->user()->isAdmin)) {
+        if ((Auth::user() && Auth::user()->id !== $article->user_id) && !(Auth::user() && Auth::user()->isAdmin)) {
             abort(403);
         }
         
         // Don't allow editing approved articles (except by admin)
-        if ($article->status === 'approved' && !auth()->user()->isAdmin) {
+        if ($article->status === 'approved' && !(Auth::user() && Auth::user()->isAdmin)) {
             return redirect()->route('artikel.show', $article->id)
                 ->with('error', 'Artikel yang sudah disetujui tidak dapat diedit.');
         }
@@ -135,12 +135,12 @@ class ArticleController extends Controller
         $article = Article::where('id', $id)->firstOrFail();
         
         // Only allow updates by author or admin
-        if (auth()->id() !== $article->user_id && !auth()->user()->isAdmin) {
+        if (Auth::id() !== $article->user_id && !(Auth::user() && Auth::user()->isAdmin)) {
             abort(403);
         }
         
         // Don't allow editing approved articles (except by admin)
-        if ($article->status === 'approved' && !auth()->user()->isAdmin) {
+        if ($article->status === 'approved' && !(Auth::user() && Auth::user()->isAdmin)) {
             return redirect()->route('artikel.show', $article->id)
                 ->with('error', 'Artikel yang sudah disetujui tidak dapat diedit.');
         }
@@ -193,7 +193,7 @@ class ArticleController extends Controller
         $article = Article::findOrFail($id);
         
         // Only allow deletion by author or admin
-        if (auth()->id() !== $article->user_id && !auth()->user()->isAdmin) {
+        if (Auth::id() !== $article->user_id && !(Auth::user() && Auth::user()->isAdmin)) {
             abort(403);
         }
         

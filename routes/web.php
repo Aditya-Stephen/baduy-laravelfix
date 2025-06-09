@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\ArticleController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
@@ -10,56 +8,70 @@ use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-
-// Halaman utama dengan data carousel dinamis
+// Route untuk guest (tidak perlu login)
 Route::get('/', [HomeController::class, 'index'])->name('homepage');
-
-// Marketplace dengan produk dinamis
 Route::get('/marketplace', [MarketplaceController::class, 'index'])->name('marketplace');
-
-// Route About Us
 Route::get('/aboutUs', function () {
     return view('aboutUs');
 })->name('aboutUs');
 
-// Artikel routes
+// Artikel routes untuk guest
 Route::controller(ArticleController::class)->group(function () {
-    // Menampilkan daftar artikel
-    Route::get('/artikel', 'index')->name('artikel');
-
-    Route::middleware('auth')->group(function () {
-        // Menyimpan artikel baru  
-        Route::post('/artikel', [ArticleController::class, 'store'])->name('artikel.store');    
-        // Menampilkan form tambah artikel
-        Route::get('/artikel/create', [ArticleController::class, 'create'])->name('artikel.create');
-    });
-    // nampilin detail artikel
-    Route::get('/artikel/{id}', 'show')->name('artikel.show');
+    Route::get('/artikel', 'index')->name('artikel'); // Daftar artikel
+    Route::get('/artikel/{id}', 'show')->name('artikel.show'); // Menampilkan detail artikel
 });
 
-// Auth routes
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login')->middleware('guest');
+// Route login dan register untuk guest
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register')->middleware('guest');
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
 
-Route::post('/auth/submit', [AuthController::class, 'handleAuthSubmit'])->name('auth.submit');
+    Route::post('/auth/submit', [AuthController::class, 'handleAuthSubmit'])->name('auth.submit');
+});
 
+// Route logout untuk user yang sudah login
 Route::post('/logout', function () {
     Auth::logout();
     return redirect()->route('homepage');
 })->name('logout');
 
-// HAPUS semua route admin di luar middleware
-
-// Admin routes - PERBAIKAN: Gunakan middleware auth saja dulu untuk debugging
+// Routes yang memerlukan login (user biasa)
 Route::middleware(['auth'])->group(function () {
-    // Admin dashboard
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+    // Artikel routes
+    Route::get('/artikel/create', [ArticleController::class, 'create'])->name('artikel.create');
+    Route::post('/artikel', [ArticleController::class, 'store'])->name('artikel.store');
+
+    // Edit Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+// Routes untuk Admin dan Superadmin
+Route::middleware(['auth', 'CheckRole:admin,superadmin'])->prefix('admin')->group(function () {
+    // Admin Dashboard
+    Route::get('/admin', function () {
+        // Fetch data untuk admin dashboard
+        $pendingArticles = \App\Models\Article::where('status', 'pending')->with('user')->get();
+        $approvedArticles = \App\Models\Article::where('status', 'approved')->with('user')->get();
+        $products = \App\Models\Product::all();
+        $carousels = \App\Models\Carousel::orderBy('order')->get();
+        
+        return view('admin', compact('pendingArticles', 'approvedArticles', 'products', 'carousels'));
+    })->name('admin.dashboard');
+
+    // Artikel routes
+    Route::post('/articles/{id}/approve', [AdminController::class, 'approveArticle'])->name('admin.articles.approve');
+    Route::post('/articles/{id}/reject', [AdminController::class, 'rejectArticle'])->name('admin.articles.reject');
+    Route::get('/articles/{id}/preview', [ArticleController::class, 'adminPreview'])->name('admin.articles.preview');
 
     // Product CRUD
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
@@ -70,16 +82,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carousels', [CarouselController::class, 'store'])->name('carousels.store');
     Route::put('/carousels/{carousel}', [CarouselController::class, 'update'])->name('carousels.update');
     Route::delete('/carousels/{carousel}', [CarouselController::class, 'destroy'])->name('carousels.destroy');
-
-    // Artikel Approval Routes
-    Route::post('/admin/articles/{id}/approve', [AdminController::class, 'approveArticle']);
-    Route::post('/admin/articles/{id}/reject', [AdminController::class, 'rejectArticle']);
-    Route::get('/admin/preview/{id}', [ArticleController::class, 'adminPreview'])->name('admin.articles.preview');
-
-    // edit profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
 });
 
-// CATATAN: Setelah route /admin bisa diakses, baru aktifkan middleware admin
+// Routes khusus untuk Superadmin
+Route::middleware(['auth', 'CheckRole:superadmin'])->prefix('superadmin')->group(function () {
+    Route::get('/admin', function () {
+        // Fetch data untuk superadmin dashboard
+        $users = \App\Models\User::all();
+        $pendingArticles = \App\Models\Article::where('status', 'pending')->with('user')->get();
+        $approvedArticles = \App\Models\Article::where('status', 'approved')->with('user')->get();
+        $products = \App\Models\Product::all();
+        $carousels = \App\Models\Carousel::orderBy('order')->get();
+
+        return view('superadmin.superadmin', compact('users', 'pendingArticles', 'approvedArticles', 'products', 'carousels'));
+    })->name('superadmin.dashboard');
+
+    // Role management actions
+    Route::put('/roles/{user}', [RoleController::class, 'update'])->name('roles.update');
+    Route::post('/roles/promote', [RoleController::class, 'promoteToAdmin'])->name('roles.promote');
+});
+

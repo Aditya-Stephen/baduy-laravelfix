@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -21,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role', // Menambahkan kolom role
         'profile_photo_path',
         'profile_photo_data',
     ];
@@ -64,16 +64,13 @@ class User extends Authenticatable
     public function getProfilePhotoUrlAttribute(): string
     {
         if ($this->profile_photo_data) {
-            // Return base64 encoded image data URI
             return 'data:image/jpeg;base64,' . $this->profile_photo_data;
         }
 
         if ($this->profile_photo_path) {
-            // Return URL to stored file
             return asset('storage/' . $this->profile_photo_path);
         }
 
-        // Return default avatar URL if no photo available
         return $this->defaultProfilePhotoUrl();
     }
 
@@ -103,7 +100,40 @@ class User extends Authenticatable
      */
     public function getIsAdminAttribute(): bool
     {
-        // Example admin logic; update as needed
-        return $this->id === 1;
+        return $this->role === 'admin' || $this->role === 'superadmin'; 
+    }
+
+    /**
+     * Check if the user is a superadmin.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'superadmin';
+    }
+
+    /**
+     * Check if the user is admin or superadmin.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || $this->role === 'superadmin';
+    }
+
+    /**
+     * Ensure a default 'user' role for new users.
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->role)) {
+                $user->role = 'user';  // Default role for new users
+            }
+        });
     }
 }
