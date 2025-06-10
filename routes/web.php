@@ -9,6 +9,7 @@ use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,6 +78,7 @@ Route::middleware(['auth', 'CheckRole:admin,superadmin'])->prefix('admin')->grou
 });
 
 // Routes khusus untuk Superadmin
+
 Route::middleware(['auth', 'CheckRole:superadmin'])->prefix('superadmin')->group(function () {
     Route::get('/', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
     
@@ -84,5 +86,10 @@ Route::middleware(['auth', 'CheckRole:superadmin'])->prefix('superadmin')->group
     Route::post('/promote', [SuperAdminController::class, 'promoteToAdmin'])->name('superadmin.promote');
     Route::post('/demote', [SuperAdminController::class, 'demoteAdmin'])->name('superadmin.demote');
     Route::delete('/users/{id}', [SuperAdminController::class, 'deleteUser'])->name('superadmin.users.delete');
+    
+    // Update user role
+    Route::put('/roles/{user}', [RoleController::class, 'update'])->name('roles.update');
+    Route::post('/roles/promote', [RoleController::class, 'promoteToAdmin'])->name('roles.promote');
+
 });
 
