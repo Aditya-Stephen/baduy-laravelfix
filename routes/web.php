@@ -3,12 +3,12 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,17 +58,9 @@ Route::middleware(['auth'])->group(function () {
 // Routes untuk Admin dan Superadmin
 Route::middleware(['auth', 'CheckRole:admin,superadmin'])->prefix('admin')->group(function () {
     // Admin Dashboard
-    Route::get('/admin', function () {
-        // Fetch data untuk admin dashboard
-        $pendingArticles = \App\Models\Article::where('status', 'pending')->with('user')->get();
-        $approvedArticles = \App\Models\Article::where('status', 'approved')->with('user')->get();
-        $products = \App\Models\Product::all();
-        $carousels = \App\Models\Carousel::orderBy('order')->get();
-        
-        return view('admin', compact('pendingArticles', 'approvedArticles', 'products', 'carousels'));
-    })->name('admin.dashboard');
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 
-    // Artikel routes
+    // Article management
     Route::post('/articles/{id}/approve', [AdminController::class, 'approveArticle'])->name('admin.articles.approve');
     Route::post('/articles/{id}/reject', [AdminController::class, 'rejectArticle'])->name('admin.articles.reject');
     Route::get('/articles/{id}/preview', [ArticleController::class, 'adminPreview'])->name('admin.articles.preview');
@@ -86,19 +78,11 @@ Route::middleware(['auth', 'CheckRole:admin,superadmin'])->prefix('admin')->grou
 
 // Routes khusus untuk Superadmin
 Route::middleware(['auth', 'CheckRole:superadmin'])->prefix('superadmin')->group(function () {
-    Route::get('/admin', function () {
-        // Fetch data untuk superadmin dashboard
-        $users = \App\Models\User::all();
-        $pendingArticles = \App\Models\Article::where('status', 'pending')->with('user')->get();
-        $approvedArticles = \App\Models\Article::where('status', 'approved')->with('user')->get();
-        $products = \App\Models\Product::all();
-        $carousels = \App\Models\Carousel::orderBy('order')->get();
-
-        return view('superadmin.superadmin', compact('users', 'pendingArticles', 'approvedArticles', 'products', 'carousels'));
-    })->name('superadmin.dashboard');
-
-    // Role management actions
-    Route::put('/roles/{user}', [RoleController::class, 'update'])->name('roles.update');
-    Route::post('/roles/promote', [RoleController::class, 'promoteToAdmin'])->name('roles.promote');
+    Route::get('/', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
+    
+    // User management
+    Route::post('/promote', [SuperAdminController::class, 'promoteToAdmin'])->name('superadmin.promote');
+    Route::post('/demote', [SuperAdminController::class, 'demoteAdmin'])->name('superadmin.demote');
+    Route::delete('/users/{id}', [SuperAdminController::class, 'deleteUser'])->name('superadmin.users.delete');
 });
 

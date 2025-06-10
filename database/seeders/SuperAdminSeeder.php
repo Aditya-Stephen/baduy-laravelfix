@@ -10,12 +10,14 @@ class SuperAdminSeeder extends Seeder
 {
     public function run(): void
     {
-        User::create([
-            'name' => 'Super Admin',
-            'email' => 'lppmumn.baduy@gmail.com',
-            'password' => Hash::make('Baduyofficial2025'), // Gunakan password yang kuat di produksi
-            'role' => 'superadmin',
-            'email_verified_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'lppmumn.baduy@gmail.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('Baduyofficial2025'),
+                'role' => 'superadmin',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

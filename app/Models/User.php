@@ -20,7 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role', // Menambahkan kolom role
+        'role', 
         'profile_photo_path',
         'profile_photo_data',
     ];
@@ -132,7 +132,7 @@ class User extends Authenticatable
 
         static::creating(function ($user) {
             if (empty($user->role)) {
-                $user->role = 'user';  // Default role for new users
+                $user->role = 'user';  
             }
         });
     }

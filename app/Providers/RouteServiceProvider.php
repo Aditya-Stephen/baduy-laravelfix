@@ -44,17 +44,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     public static function redirectTo()
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            
-            if ($user->role === 'superadmin') {
-                return '/superadmin';
-            } 
-            elseif ($user->role === 'admin') {
-                return '/admin';
-            }
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if ($user->role === 'superadmin') {
+            return '/superadmin';
+        } elseif ($user->role === 'admin') {
+            return '/admin';
         }
-        
-        return self::HOME;
+
+        return static::HOME;
     }
 }

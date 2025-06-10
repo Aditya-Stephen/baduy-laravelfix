@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -11,49 +13,26 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        // Check if login or register
-        if ($request->has('register')) {
-            // Register logic here
-            // ...
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
             
-            // After registration, log them in
-            // ...
+            $user = Auth::user();
             
-            // Then redirect based on role
-            return $this->redirectBasedOnRole(Auth::user());
-        } 
-        else {
-            // Login attempt
-            if (Auth::attempt($credentials)) {
-                $request->session()->regenerate();
-                
-                // Redirect based on user role
-                return $this->redirectBasedOnRole(Auth::user());
+            // Redirect berdasarkan role
+            if ($user->role === 'superadmin') {
+                return redirect()->intended('/superadmin');
+            } elseif ($user->role === 'admin') {
+                return redirect()->intended('/admin');
             }
             
-            return back()->withErrors([
-                'email' => 'Email atau password salah',
-            ])->withInput();
+            return redirect()->intended('/');
         }
-    }
-    
-    /**
-     * Redirect the user based on their role
-     */
-    protected function redirectBasedOnRole($user)
-    {
-        if ($user->role === 'superadmin') {
-            return redirect()->route('superadmin.dashboard');
-        } 
-        else if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } 
-        else {
-            // Regular user
-            return redirect()->route('homepage');
-        }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 }
