@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Article;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ArticleController extends Controller
 {
@@ -30,7 +32,7 @@ class ArticleController extends Controller
             });
         }
         
-        $articles = $query->latest()->paginate(10)->appends($request->query());
+        $articles = $query->latest()->paginate(2)->appends($request->query());
         
         $categories = Cache::remember('article_counts_by_category', now()->addHours(6), function() {
             return [
@@ -74,7 +76,7 @@ class ArticleController extends Controller
             'title' => 'required|max:255',
             'genre' => 'required|in:Budaya & Tradisi,Kearifan Lokal,Mitos & Kepercayaan,Lokasi',
             'content' => 'required',
-            'header_image' => 'nullable|image|mimes:jpeg,png,jpg|max:4048'       
+            'header_image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120'      
         ]);
 
         if (!auth()->check()) {
@@ -90,16 +92,32 @@ class ArticleController extends Controller
             'created_at' => now()
         ]);
 
-        // Handle image upload - store both path and binary data
+        // Handle image upload dengan BLOB
         if ($request->hasFile('header_image')) {
-            $file = $request->file('header_image');
-            
-            // Store path for compatibility
-            $imagePath = $file->store('article_images', 'public');
-            $article->header_image = $imagePath;
-            
-            // Store binary data
-            $article->image_data = base64_encode(file_get_contents($file->getRealPath()));
+            try {
+                $image = $request->file('header_image');
+                
+                // Method 1: Gunakan Intervention Image dengan fallback
+                if (extension_loaded('gd')) {
+                    $manager = new ImageManager(new Driver());
+                    $img = $manager->read($image)
+                        ->resize(1200, null, fn ($constraint) => $constraint->aspectRatio())
+                        ->toJpeg(70);
+                    $article->header_image = $img;
+                } 
+                // Method 2: Fallback ke GD native jika Intervention error
+                else {
+                    $source = imagecreatefromstring(file_get_contents($image));
+                    ob_start();
+                    imagejpeg($source, null, 70);
+                    $article->header_image = ob_get_clean();
+                    imagedestroy($source);
+                }
+            } catch (\Exception $e) {
+                // Log error dan simpan tanpa kompresi
+                \Log::error('Image processing failed: '.$e->getMessage());
+                $article->header_image = file_get_contents($image->getRealPath());
+            }
         }
 
         $article->save();
@@ -162,21 +180,10 @@ class ArticleController extends Controller
             $article->rejection_reason = null;
         }
         
-        // Handle image upload - update both path and binary data
+        // Handle image upload dengan BLOB
         if ($request->hasFile('header_image')) {
-            // Delete old image if exists
-            if ($article->header_image) {
-                Storage::disk('public')->delete($article->header_image);
-            }
-            
             $file = $request->file('header_image');
-            
-            // Store path for compatibility
-            $imagePath = $file->store('article_images', 'public');
-            $article->header_image = $imagePath;
-            
-            // Store binary data
-            $article->image_data = base64_encode(file_get_contents($file->getRealPath()));
+            $article->header_image = file_get_contents($file->getRealPath());
         }
         
         $article->save();

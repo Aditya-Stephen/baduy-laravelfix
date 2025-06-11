@@ -23,6 +23,7 @@
   <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+  <!-- Text Editor Tambahan -->
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.css">
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.min.js"></script>
 
@@ -34,7 +35,7 @@
     x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
     :class="scrolled
     ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
-    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+    : 'bg-gray-800'"
     class="sticky top-0 z-50 transition-colors duration-300 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">

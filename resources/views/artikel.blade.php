@@ -26,17 +26,42 @@
 </head>
 
 <body class="bg-gray-900">
-  <header class="header header_style_01 bg-gray-800 py-2">
+  <header 
+    x-data="{ scrolled: false, mobileMenuOpen: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+    :class="scrolled
+    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+    class="sticky top-0 z-50 transition-colors duration-300 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
-        <!-- Logo (kiri) -->
-        <div class="flex-shrink-0">
-          <a href="{{ url('/') }}" class="flex items-center">
-            <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
-          </a>
+        <!-- Logo and Mobile Search -->
+        <div class="flex items-center space-x-4">
+          <!-- Logo -->
+          <div class="flex-shrink-0">
+            <a href="{{ url('/') }}" class="flex items-center">
+              <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+            </a>
+          </div>
+
+          <!-- Search Bar for Mobile (always visible) -->
+          <div class="md:hidden">
+            <form action="{{ url('/artikel') }}" method="GET" class="w-full" role="search">
+              <div class="relative flex items-center w-40">
+                <input type="search" name="search" placeholder="Cari..."
+                  class="w-full py-1 pl-3 pr-8 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  required />
+                <button type="submit" class="absolute right-0 top-0 mt-1 mr-2 text-gray-400 hover:text-white">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
-        <!-- Search Bar (tengah) - Hanya pada layar medium ke atas -->
+        <!-- Search Bar for Desktop -->
         <div class="hidden md:flex flex-1 mx-8">
           <form action="{{ url('/artikel') }}" method="GET" class="w-full max-w-xl" role="search">
             <div class="relative flex items-center w-full">
@@ -52,84 +77,85 @@
           </form>
         </div>
 
-        <!-- Hamburger menu untuk mobile -->
+        <!-- Hamburger menu -->
         <div class="md:hidden">
-          <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
+          <button
+            type="button"
+            class="text-white hover:text-gray-300 focus:outline-none"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            aria-label="Toggle menu">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
 
-        <!-- Menu navigasi (kanan) -->
-        <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
+        <!-- Nav links -->
+        <div
+          :class="mobileMenuOpen
+          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+          : 'hidden md:flex items-center space-x-6'"
+          class="md:flex">
+          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
 
-          <!-- Login/Logout -->
           @auth
           <div class="relative" x-data="{ open: false }">
-              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                  @if(Auth::user()->profile_photo_path)
-                      <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
-                  @else
-                      <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
-                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                      </div>
-                  @endif
-                  {{ Auth::user()->name }}
-                  <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-              </button>
-              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                  <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                      Edit Profile
-                  </a>
-                  <form method="POST" action="{{ route('logout') }}">
-                      @csrf
-                      <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                          Logout
-                      </button>
-                  </form>
-              </div>
+            <button
+              @click="open = !open"
+              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+              aria-haspopup="true"
+              :aria-expanded="open.toString()">
+              @if(Auth::user()->profile_photo_path)
+                  <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @else
+                  <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
+                      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                  </div>
+              @endif
+              {{ Auth::user()->name }}
+              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div
+              x-show="open"
+              @click.away="open = false"
+              x-transition
+              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+              style="display: none;">
+              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+                Edit Profile
+              </a>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                  Logout
+                </button>
+              </form>
+            </div>
           </div>
           @else
-          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
+          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
           @endauth
         </div>
       </div>
     </nav>
-
-    <!-- Search bar untuk mobile (muncul saat menu di-toggle) -->
-    <!-- PERBAIKAN: Menggunakan style display none alih-alih class hidden -->
-    <div class="md:hidden mt-2 px-4" id="mobile-search" style="display: none;">
-      <form action="{{ url('/artikel') }}" method="GET" class="w-full" role="search">
-        <div class="relative flex items-center w-full">
-          <input type="search" name="search" placeholder="Cari artikel..."
-            class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-            required />
-          <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </button>
-        </div>
-      </form>
-    </div>
   </header>
 
-  <main class="flex-grow">
-      <!-- Banner Area -->
-      <div class="relative overflow-hidden h-[400px] md:h-[500px] lg:h-[600px]">
+  <main class="flex-grow"> <!-- mt-16 untuk memberi ruang header fixed -->
+    <!-- Banner Area -->
+    <div class="relative overflow-hidden h-[400px] md:h-[500px] lg:h-[600px] pt-16">
         <!-- Background with overlay and parallax effect -->
         <div class="absolute inset-0 z-0">
-            <div 
-                class="w-full h-full bg-[url('{{ asset('images/banner-artikel.jpg') }}')] bg-cover bg-center bg-no-repeat 
-                      scale-100 hover:scale-105 transition-transform duration-700"
-            ></div>
+          <div 
+            class="w-full h-full bg-cover bg-center bg-no-repeat scale-100 hover:scale-105 transition-transform duration-700"
+            style="background-image: url('{{ asset('images/banner-artikel.jpg') }}')"
+          ></div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#305792]/90 to-[#313a4d]/70"></div>
         </div>
 
@@ -171,15 +197,15 @@
       </div>
 
         <!-- Section Kategori Horizontal -->
-        <div class="bg-gradient-to-r from-blue-500 to-blue-900 py-1 border-b border-blue-300 shadow-sm">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 py-1 shadow-md">
           <div class="container mx-auto px-4">
               <div class="relative flex justify-center">
-                  <ul class="flex space-x-10 overflow-x-auto py-2 scrollbar-hide mx-auto"> <!-- Changed space-x-1 to space-x-4 -->
+                  <ul class="flex space-x-4 md:space-x-6 overflow-x-auto py-3 scrollbar-hide mx-auto">
                       @php
                           $categories = [
                               'all' => 'Terbaru',
                               'Budaya & Tradisi' => 'Budaya & Tradisi',
-                              'Kearifan Lokal' => 'Kearifan Lokal',
+                              'Kearifan Lokal' => 'Kearifan Lokal', 
                               'Mitos & Kepercayaan' => 'Mitos & Kepercayaan',
                               'Lokasi' => 'Lokasi'
                           ];
@@ -188,21 +214,19 @@
                       @foreach($categories as $key => $label)
                       <li class="flex-shrink-0">
                           <a href="{{ route('artikel', ['genre' => $key]) }}" 
-                            class="relative block px-6 py-3 rounded-lg transition-all duration-300 group
-                                  @if(request('genre', 'all') == $key) 
-                                      bg-[#6d6d4f] text-white shadow-md
-                                  @else 
-                                      bg-white/80 text-gray-700
-                                  @endif">
-                              <span class="relative z-10 font-medium whitespace-nowrap group-hover:text-white">
+                              class="relative block px-5 py-2.5 rounded-lg transition-all duration-300 group
+                                    @if(request('genre', 'all') == $key) 
+                                        bg-white text-blue-800 font-semibold shadow-lg
+                                    @else 
+                                        bg-white/20 text-white hover:bg-white/30
+                                    @endif">
+                              <span class="relative z-10 whitespace-nowrap">
                                   {{ $label }}
                               </span>
-                              <!-- Hover effect background -->
-                              <span class="absolute inset-0 rounded-lg bg-[#6d6d4f] opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-0"></span>
                               
                               <!-- Active indicator -->
                               @if(request('genre') == $key || ($key == 'all' && !request('genre')))
-                              <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-4 h-1 bg-yellow-300 rounded-t-md"></span>
+                              <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-yellow-300 rounded-t-md"></span>
                               @endif
                           </a>
                       </li>
@@ -244,24 +268,24 @@
                       <!-- Articles List -->
                       <div class="space-y-12">
                         @foreach ($articles as $article)
-                        <article class="group relative flex flex-col md:flex-row gap-6 pb-12 border-b border-gray-300 hover:border-gray-400 transition-colors duration-300">
+                        <article class="group relative flex flex-col md:flex-row gap-6 pb-12 border-b border-gray-700 hover:border-yellow-400 transition-colors duration-300">
                             <!-- Author Avatar -->
                             <div class="flex-shrink-0 relative">
-                                <div class="absolute -inset-2 bg-blue-50 rounded-2xl transform scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-0"></div>
+                                <div class="absolute -inset-2 bg-blue-900/30 rounded-2xl transform scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-0"></div>
                                 <img 
                                     src="{{ $article->user->profile_photo_path ? (filter_var($article->user->profile_photo_path, FILTER_VALIDATE_URL) ? $article->user->profile_photo_path : asset('storage/'.$article->user->profile_photo_path)) : asset('images/user-profile.png') }}" 
                                     alt="{{ $article->user->name }}" 
-                                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-white shadow-md hover:scale-110 hover:border-blue-300 hover:shadow-lg transition-all duration-200 ease-out">
+                                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-gray-600 shadow-md hover:scale-110 hover:border-yellow-400 hover:shadow-lg transition-all duration-200 ease-out">
                             </div>
 
                             <!-- Article Content -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center mb-2">
-                                    <h3 class="text-xl font-semibold text-yellow-400 hover:text-yellow-100 transition-colors">
+                                    <h3 class="text-xl font-semibold text-yellow-400 hover:text-yellow-300 transition-colors">
                                         {{ $article->user->name }}
                                     </h3>
-                                    <span class="mx-2 text-white">•</span>
-                                    <time class="text-sm text-white">
+                                    <span class="mx-2 text-gray-400">•</span>
+                                    <time class="text-sm text-gray-300">
                                         @if($article->created_at)
                                             {{ $article->created_at->format('F j, Y') }}
                                         @else
@@ -270,17 +294,17 @@
                                     </time>
                                 </div>
 
-                                <h2 class="text-2xl md:text-3xl font-bold mb-3 text-yellow-400 group-hover:text-yellow-100 transition-colors">
-                                    <a href="{{ route('artikel.show', $article->id) }}" class="hover:underline decoration-2 underline-offset-4">
+                                <h2 class="text-2xl md:text-3xl font-bold mb-3 text-white group-hover:text-yellow-300 transition-colors">
+                                    <a href="{{ route('artikel.show', $article->id) }}" class="hover:underline decoration-yellow-400 underline-offset-4">
                                         {{ $article->title }}
                                     </a>
                                 </h2>
 
-                                <p class="text-lg text-gray-300 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide break-words overflow-hidden">
-                                  {{ Str::limit(strip_tags($article->content), 400) }}
+                                <p class="text-lg text-gray-300 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide">
+                                    {{ Str::limit(strip_tags($article->content), 400) }}
                                 </p>                                
 
-                                <a href="{{ route('artikel.show', $article->id) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                <a href="{{ route('artikel.show', $article->id) }}" class="inline-flex items-center text-yellow-400 hover:text-yellow-300 font-medium transition-colors">
                                     Baca lebih banyak
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -296,23 +320,23 @@
                       <div class="mt-16">
                           <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                               <!-- Info halaman -->
-                              <div class="text-base text-gray-600">
-                                  Menampilkan <span class="font-semibold text-gray-800">{{ $articles->firstItem() }}</span> - 
-                                  <span class="font-semibold text-gray-800">{{ $articles->lastItem() }}</span> dari 
-                                  <span class="font-semibold text-gray-800">{{ $articles->total() }}</span> artikel
+                              <div class="text-base text-gray-300">
+                                  Menampilkan <span class="font-semibold text-yellow-300">{{ $articles->firstItem() }}</span> - 
+                                  <span class="font-semibold text-yellow-300">{{ $articles->lastItem() }}</span> dari 
+                                  <span class="font-semibold text-yellow-300">{{ $articles->total() }}</span> artikel
                               </div>
                               
                               <!-- Navigasi halaman -->
                               <nav class="flex items-center space-x-4">
                                   {{-- Previous Page Link --}}
                                   @if($articles->onFirstPage())
-                                      <span class="px-4 py-2 rounded-lg text-blue-400 cursor-not-allowed border border-blue-200">
+                                      <span class="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                           </svg>
                                       </span>
                                   @else
-                                      <a href="{{ $articles->previousPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->previousPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                           </svg>
@@ -324,11 +348,11 @@
                                   <div class="flex space-x-3">
                                       @foreach($articles->getUrlRange(1, $articles->lastPage()) as $page => $url)
                                           @if($page == $articles->currentPage())
-                                              <span class="px-4 py-2 bg-blue-600 text-white rounded-lg border border-blue-200 font-medium">
+                                              <span class="px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg border border-yellow-400 font-medium">
                                                   {{ $page }}
                                               </span>
                                           @else
-                                              <a href="{{ $url }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 text-blue-700 hover:bg-gray-50 rounded-lg border border-blue-200 hover:border-blue-500 transition-all duration-200">
+                                              <a href="{{ $url }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
                                                   {{ $page }}
                                               </a>
                                           @endif
@@ -337,14 +361,14 @@
 
                                   {{-- Next Page Link --}}
                                   @if($articles->hasMorePages())
-                                      <a href="{{ $articles->nextPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-blue-200 text-blue-700 hover:bg-gray-50 hover:border-blue-600 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->nextPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
                                           Selanjutnya
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                           </svg>
                                       </a>
                                   @else
-                                      <span class="px-4 py-2 rounded-lg text-blue-400 cursor-not-allowed border border-blue-200">
+                                      <span class="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                                           </svg>
@@ -358,8 +382,8 @@
 
                   <!-- Sidebar -->
                   <div class="w-full lg:w-4/12 mt-12 lg:mt-0">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 pb-2 border-b border-gray-100">Kategori Populer</h3>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 sticky top-6">
+                        <h3 class="text-xl font-bold text-yellow-300 mb-4 pb-2 border-b border-gray-700">Kategori Populer</h3>
                         <ul class="space-y-3">
                             @php
                                 $categories = [
@@ -373,9 +397,9 @@
                             @foreach($categories as $category => $count)
                             <li>
                                 <a href="{{ route('artikel', ['genre' => $category]) }}" 
-                                  class="flex items-center justify-between text-gray-700 hover:text-blue-600 transition-colors">
-                                    <span>{{ $category }}</span>
-                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                                  class="flex items-center justify-between text-gray-300 hover:text-yellow-300 transition-colors group">
+                                    <span class="group-hover:underline">{{ $category }}</span>
+                                    <span class="bg-yellow-400/10 text-yellow-300 text-xs font-medium px-2.5 py-0.5 rounded-full border border-yellow-400/30 group-hover:bg-yellow-400/20">
                                         {{ $count }}
                                     </span>
                                 </a>
@@ -390,21 +414,21 @@
         </div>
 
         <!-- Tombol Tambah Artikel -->
-        <div class="fixed bottom-[60px] right-[50px] z-[900] md:bottom-[50px] md:right-[40px]">
-            <a href="{{ route('artikel.create') }}" 
-                class="group relative flex items-center justify-center gap-3 h-[5.5rem] md:h-[4rem] w-[6.5rem] md:w-[4.2rem] bg-[#2f4f7f] border border-white overflow-hidden transition-all duration-300 ease-in-out shadow-md hover:bg-[#1a1d23] hover:pr-[0rem] focus-visible:outline-none focus-visible:bg-[#1a1d23] focus-visible:pr-[2rem]">
-                
-                <!-- Segitiga di pojok kanan atas -->
-                <div class="absolute top-0 right-0 w-0 h-0 border-r-[1.2rem] border-r-blue-400 border-b-[1.2rem] border-b-transparent transition-all duration-200 ease-in-out group-hover:border-r-[12.65rem] group-hover:border-b-[12.65rem] group-focus-visible:border-r-[8.25rem] group-focus-visible:border-b-[8.25rem]"></div>
-                
-                <!-- Icon Plus -->
-                <svg class="w-[2.75rem] h-[2.75rem] md:w-[1.5rem] md:h-[2.5rem] fill-white transition-all duration-300 ease-in-out group-hover:fill-[#1a1d23] group-hover:rotate-180 group-focus-visible:fill-white group-focus-visible:rotate-180" 
-                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
-                    <g mask="url(#mask0_21_345)">
-                        <path d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z"></path>
-                    </g>
-                </svg>
-            </a>
+        <div class="fixed bottom-6 right-6 z-[900] md:bottom-8 md:right-8">
+          <a href="{{ route('artikel.create') }}" 
+              class="group relative flex items-center justify-center gap-3 h-16 w-16 md:h-14 md:w-14 bg-gradient-to-br from-blue-600 to-blue-800 border-2 border-white/20 rounded-lg overflow-hidden transition-all duration-300 ease-in-out shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-blue-900 focus-visible:outline-none">
+              
+              <!-- Segitiga di pojok kanan atas (dengan warna yang lebih terang) -->
+              <div class="absolute top-0 right-0 w-0 h-0 border-r-[1.2rem] border-r-blue-400/80 border-b-[1.2rem] border-b-transparent transition-all duration-200 ease-in-out group-hover:border-r-[8rem] group-hover:border-b-[8rem]"></div>
+              
+              <!-- Icon Plus -->
+              <svg class="w-8 h-8 md:w-6 md:h-6 fill-white transition-all duration-300 ease-in-out group-hover:rotate-180" 
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                  <g mask="url(#mask0_21_345)">
+                      <path d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z"></path>
+                  </g>
+              </svg>
+          </a>
         </div>
     </main>
 

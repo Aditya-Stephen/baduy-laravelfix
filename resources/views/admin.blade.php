@@ -217,8 +217,7 @@
                 </div>
 
                 <!-- Artikel tab -->
-                <div x-show="activeTab === 'articles'" x-data="{ showRejectModal: false, rejectArticleId: null }">
-                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <div x-show="activeTab === 'articles'" x-data="{ showRejectModal: false, rejectArticleId: null, rejectReason: '' }">                    <div class="bg-white rounded-lg shadow p-6 mb-6">
                         <!-- Notifikasi Artikel -->
                         @if(session('article_success'))
                         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
@@ -371,7 +370,7 @@
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </div> 
                 </div>
 
                 <!-- Add Product Modal -->

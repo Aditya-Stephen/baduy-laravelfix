@@ -26,103 +26,129 @@
 </head>
 
 <body class="bg-gray-100">
-  <header class="header header_style_01 bg-gray-800 py-2">
+  <header
+    x-data="{ scrolled: false, mobileMenuOpen: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+    :class="scrolled
+    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+    : 'bg-gray-800'"
+    class="sticky top-0 z-50 transition-colors duration-300 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
-
-        <!-- Logo (kiri) -->
+        <!-- Logo -->
         <div class="flex-shrink-0">
           <a href="{{ url('/') }}" class="flex items-center">
             <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
           </a>
         </div>
 
-        <!-- Hamburger menu untuk mobile -->
+        <!-- Hamburger menu -->
         <div class="md:hidden">
-          <button type="button" class="text-white hover:text-gray-300 focus:outline-none" id="mobile-menu-button">
+          <button
+            type="button"
+            class="text-white hover:text-gray-300 focus:outline-none"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            aria-label="Toggle menu">
             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
 
-        <!-- Menu navigasi (kanan) -->
-        <div class="hidden md:flex items-center space-x-6" id="navbar-menu">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium">Article</a>
+        <!-- Nav links -->
+        <div
+          :class="mobileMenuOpen
+          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+          : 'hidden md:flex items-center space-x-6'"
+          class="md:flex">
+          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
 
-          <!-- Login/Logout -->
           @auth
           <div class="relative" x-data="{ open: false }">
-              <button @click="open = !open" class="flex items-center text-white hover:text-yellow-400 font-medium">
-                  @if(Auth::user()->profile_photo_path)
-                      <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
-                  @else
-                      <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
-                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                      </div>
-                  @endif
-                  {{ Auth::user()->name }}
-                  <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-              </button>
-              <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
-                  <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                      Edit Profile
-                  </a>
-                  <form method="POST" action="{{ route('logout') }}">
-                      @csrf
-                      <button type="submit" class="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
-                          Logout
-                      </button>
-                  </form>
-              </div>
+            <button
+              @click="open = !open"
+              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+              aria-haspopup="true"
+              :aria-expanded="open.toString()">
+              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              {{ Auth::user()->name }}
+              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <div
+              x-show="open"
+              @click.away="open = false"
+              x-transition
+              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+              style="display: none;">
+              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+                Edit Profile
+              </a>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                  Logout
+                </button>
+              </form>
+            </div>
           </div>
           @else
-          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium">Login</a>
+          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
           @endauth
         </div>
       </div>
     </nav>
-</header>
+  </header>
 
   <main class="flex-grow">
     <div class="bg-gray-900 py-[30px]">
         <!-- Article Content -->
-        <div class="container mx-auto px-4">
+          <div class="container mx-auto px-4 py-6 md:py-[30px]">
             <div class="flex flex-wrap">
                 <div class="w-full">
                     <div class="p-0">
-                        @if($article->header_image)
-                            <div class="relative group overflow-hidden rounded-xl shadow-2xl mb-10 transition-all duration-500 hover:shadow-3xl hover:rounded-2xl">
-                                <!-- Image with parallax effect -->
-                                <div class="h-[400px] md:h-[500px] overflow-hidden">
-                                    <img src="{{ $article->header_image ? 'data:image/jpeg;base64,'.$article->header_image : ($article->header_image_path ? asset('storage/'.$article->header_image_path) : '') }}" 
-                                        alt="Header Image"
-                                        class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-                                        style="object-position: center 35%;">
-                                </div>
-                                
-                                <!-- Overlay content remains the same -->
-                                <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
-                                    <div class="max-w-4xl text-yellow-400">
-                                        <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                                            <span class="text-sm font-medium">Featured Article</span>
-                                        </div>
-                                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-shadow-lg break-words">
-                                            {{ $article->title }}
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                      @if($article->header_image || $article->header_image_path)
+                      <div class="relative group overflow-hidden rounded-xl shadow-2xl mb-6 md:mb-10 transition-all duration-500 hover:shadow-3xl hover:rounded-2xl">
+                          <!-- Image with parallax effect -->
+                          <div class="h-[300px] md:h-[500px] overflow-hidden">
+                              @if($article->header_image)
+                                  <!-- Jika menggunakan BLOB data langsung dari database -->
+                                  <img src="data:image/jpeg;base64,{{ base64_encode($article->header_image) }}" 
+                                      alt="Header Image"
+                                      class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                                      style="object-position: center 35%;">
+                              @elseif($article->header_image_path)
+                                  <!-- Jika menggunakan path ke file di storage -->
+                                  <img src="{{ asset('storage/'.$article->header_image_path) }}" 
+                                      alt="Header Image"
+                                      class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                                      style="object-position: center 35%;">
+                              @endif
+                          </div>
+                          
+                          <!-- Overlay content remains the same -->
+                          <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
+                              <div class="max-w-4xl text-yellow-400">
+                                  <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                                      <span class="text-sm font-medium">Featured Article</span>
+                                  </div>
+                                  <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-shadow-lg break-words">
+                                      {{ $article->title }}
+                                  </h1>
+                              </div>
+                          </div>
+                      </div>
+                  @endif
                         <div class="flex flex-col">
                             <div class="order-3">
-                                <p class="italic text-gray-300">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
-                                <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-gray-300 my-[30px] text-justify break-words overflow-hidden">
+                                <p class="italic text-gray-300 text-sm md:text-base">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
+                                <div class="leading-relaxed text-base md:text-lg text-gray-300 my-4 md:my-[30px] text-justify break-words overflow-hidden">
                                     {!! $article->content !!}
                                 </div>
                             </div>
@@ -148,7 +174,7 @@
         </div>
     </div>
 
-<footer class="bg-[#262828] text-white py-8 mt-16">
+<footer class="bg-[#262828] text-white py-8">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
 

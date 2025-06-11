@@ -12,11 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('articles', function (Blueprint $table) {
-            // First make a backup of existing column
-            $table->renameColumn('header_image', 'header_image_path');
-            
             // Add new column for binary data
-            $table->longText('header_image')->nullable()->after('header_image_path');
+            $table->binary('header_image')->nullable()->change();
         });
     }
 
@@ -27,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('articles', function (Blueprint $table) {
             $table->dropColumn('header_image');
-            $table->renameColumn('header_image_path', 'header_image');
+            $table->string('header_image')->nullable()->change();
         });
     }
 };

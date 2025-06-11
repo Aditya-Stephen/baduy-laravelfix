@@ -23,13 +23,29 @@ class Article extends Model
         'created_at'
     ];
 
-    protected $dates = [
-        'created_at',
+    protected $casts = [
+        'created_at' => 'datetime',
     ];
 
-    protected $attributes = [
-        'created_at' => null,
-    ];
+    protected $appends = ['header_image_url'];
+
+    public function getHeaderImageUrlAttribute()
+    {
+        if (empty($this->header_image)) {
+            return null;
+        }
+
+        // Periksa jika sudah berupa base64 string
+        if (is_string($this->header_image) && base64_decode($this->header_image, true) !== false) {
+            return 'data:image/jpeg;base64,'.$this->header_image;
+        }
+
+        // Jika binary data, encode ke base64
+        return 'data:image/jpeg;base64,'.base64_encode($this->header_image);
+    }
+
+    protected $hidden = ['header_image'];
+
 
     public function user()
     {
