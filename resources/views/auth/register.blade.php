@@ -41,7 +41,7 @@
                 <!-- Form Section -->
                 <div class="md:w-2/3 md:pl-8">
                     <h2 class="text-center text-3xl font-bold mb-6 text-yellow-400">Register</h2>
-                    <form method="POST" action="{{ route('auth.submit') }}">
+                    <form method="POST" action="{{ route('register.store') }}">
                         @csrf
                         <div class="mb-5">
                             <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Name</label>
