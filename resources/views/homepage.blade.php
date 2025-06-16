@@ -14,6 +14,8 @@
   <meta name="keywords" content="">
   <meta name="description" content="">
   <meta name="author" content="">
+  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -69,9 +71,9 @@
               :aria-expanded="open.toString()">
               <!-- UBAH: Profile Image BLOB -->
               @if(Auth::user()->profileImage())
-                <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
               @else
-                <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
               @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -169,11 +171,11 @@
             <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
               <!-- UBAH: Carousel Image BLOB -->
               @if($carousel->mainImage())
-                <img src="{{ route('image.show', $carousel->mainImage()->id) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+              <img src="{{ route('image.show', $carousel->mainImage()->id) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
               @else
-                <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
-                  <span class="text-gray-300">No Image</span>
-                </div>
+              <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+                <span class="text-gray-300">No Image</span>
+              </div>
               @endif
               <h2 class="mt-4 text-xl font-bold text-yellow-500">{{ $carousel->title }}</h2>
               <p class="mb-4 px-4 text-gray-200">{{ $carousel->description }}</p>
@@ -250,11 +252,11 @@
           <div class="relative bg-white shadow rounded overflow-hidden">
             <!-- UBAH: Product Image BLOB -->
             @if($product->mainImage())
-              <img src="{{ route('image.show', $product->mainImage()->id) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+            <img src="{{ route('image.show', $product->mainImage()->id) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
             @else
-              <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
-                <span class="text-gray-500">No Image</span>
-              </div>
+            <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+              <span class="text-gray-500">No Image</span>
+            </div>
             @endif
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
