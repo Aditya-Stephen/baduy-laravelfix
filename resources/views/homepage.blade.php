@@ -14,7 +14,7 @@
   <meta name="keywords" content="">
   <meta name="description" content="">
   <meta name="author" content="">
-
+  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -201,7 +201,7 @@
           <p class="text-gray-300 mb-6">
             The Baduy community, with their rich cultural heritage and long-preserved traditions, seeks to introduce their local wisdom to a wider audience. Through broader promotion, they hope that their traditional values, handcrafted products such as weaving, weaving crafts, and natural goods can become more recognized and appreciated by the general public. This way, not only will their culture remain preserved, but it will also provide economic benefits for their community, opening new opportunities in trade while maintaining the principles of sustainability and environmental preservation that they deeply uphold.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/aboutUs') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</a>
         </div>
         <div>
           <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
@@ -217,7 +217,7 @@
           <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
-          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
+          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Article</h2>
           <h1 class="text-2xl text-yellow-400 font-bold mb-4">Konten</h1>
           <p class="italic text-gray-300 mb-4">
             Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus. Sed a tellus quis mi rhoncus dignissim.
@@ -225,7 +225,7 @@
           <p class="text-gray-300 mb-6">
             Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/artikel') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block">Learn More</a>
         </div>
       </div>
     </section>

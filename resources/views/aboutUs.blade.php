@@ -111,7 +111,6 @@
           <p class="text-gray-300 mb-6">
             The Baduy community, with their rich cultural heritage and long-preserved traditions, seeks to introduce their local wisdom to a wider audience. Through broader promotion, they hope that their traditional values, handcrafted products such as weaving, weaving crafts, and natural goods can become more recognized and appreciated by the general public. This way, not only will their culture remain preserved, but it will also provide economic benefits for their community, opening new opportunities in trade while maintaining the principles of sustainability and environmental preservation that they deeply uphold.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
         </div>
         <div>
           <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
@@ -124,7 +123,7 @@
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
+          <img src="{{ asset('images/petabaduy.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
           <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
@@ -135,7 +134,7 @@
           <p class="text-gray-300 mb-6">
             Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="https://maps.app.goo.gl/CqS7iQtW6Xz6ptnA7" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block">Maps</a>
         </div>
       </div>
     </section>
