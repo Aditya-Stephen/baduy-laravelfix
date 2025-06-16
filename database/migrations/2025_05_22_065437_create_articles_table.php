@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Relasi ke user
             $table->string('title');
-            $table->enum('genre', ['Budaya & Tradisi', 'Kearifan Lokal', 'Mitos & Kepercayaan', 'Lokasi'])->default('Budaya & Tradisi');
-            $table->text('content');
-            $table->string('header_image')->nullable();
-            $table->timestamp('created_at')->useCurrent();
-            });
+            $table->string('genre');
+            $table->longText('content');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->unsignedBigInteger('user_id');
+            $table->timestamps(); // Ini yang penting!
+            
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->index('status');
+            $table->index('genre');
+        });
     }
 
     /**

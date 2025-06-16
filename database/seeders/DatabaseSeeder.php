@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         // Pemanggilan SuperAdminSeeder
         $this->call([
-            SuperAdminSeeder::class, // Menambahkan pemanggilan SuperAdminSeeder
+            SuperAdminSeeder::class, 
         ]);
 
         // Seeding user contoh

@@ -2,33 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    //
     use HasFactory;
 
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = null;
-
     protected $fillable = [
-        'user_id',
         'title',
-        'genre',
+        'genre', 
         'content',
-        'header_image',
-        'created_at'
+        'status',
+        'user_id',
+        'rejection_reason',
+        'approved_by',
+        'reviewed_by',
+        'approved_at',
+        'reviewed_at'
     ];
 
-    protected $dates = [
-        'created_at',
-    ];
+    public $timestamps = true;
 
-    protected $attributes = [
-        'created_at' => null,
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
 
     public function user()
@@ -36,21 +36,68 @@ class Article extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+    public function approvedBy()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->created_at)) {
-                $model->created_at = now();
-            }
-        });
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function getFormattedCreatedAtAttribute()
+    public function reviewedBy()
     {
-        return $this->created_at 
-            ? $this->created_at->format('F j, Y') 
-            : 'No date available';
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    // =================================
+    // SISTEM IMAGES - POLYMORPHIC RELATIONSHIP
+    // =================================
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    // PERBAIKI: Return relationship instance, bukan collection
+    public function headerImages()
+    {
+        return $this->morphMany(Image::class, 'imageable')->where('image_type', 'header');
+    }
+
+    public function galleryImages()
+    {
+        return $this->morphMany(Image::class, 'imageable')
+                    ->where('image_type', 'gallery')
+                    ->orderBy('order');
+    }
+
+    // Helper methods untuk mendapatkan single header image
+    public function getHeaderImageAttribute()
+    {
+        return $this->headerImages()->first();
+    }
+
+    // Helper method untuk cek apakah ada header image
+    public function headerImage()
+    {
+        return $this->headerImages()->first();
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+    public function scopeByGenre($query, $genre)
+    {
+        return $query->where('genre', $genre);
     }
 }

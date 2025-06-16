@@ -67,7 +67,12 @@
               :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
               aria-haspopup="true"
               :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <!-- UBAH: Profile Image BLOB -->
+              @if(Auth::user()->profileImage())
+                <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @else
+                <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -156,13 +161,20 @@
 
   <main class="flex-grow">
     <div class="relative max-w-7xl mx-auto px-4 py-12">
-      <!-- Carousel dinamis -->
+      <!-- Carousel dinamis - UBAH BAGIAN INI -->
       <div id="carousel" class="overflow-hidden relative">
         <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0%)">
           @forelse($carousels as $carousel)
           <div class="min-w-full flex-shrink-0 p-4">
             <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
-              <img src="{{ asset($carousel->image) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+              <!-- UBAH: Carousel Image BLOB -->
+              @if($carousel->mainImage())
+                <img src="{{ route('image.show', $carousel->mainImage()->id) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+              @else
+                <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+                  <span class="text-gray-300">No Image</span>
+                </div>
+              @endif
               <h2 class="mt-4 text-xl font-bold text-yellow-500">{{ $carousel->title }}</h2>
               <p class="mb-4 px-4 text-gray-200">{{ $carousel->description }}</p>
             </div>
@@ -174,7 +186,7 @@
                 <p class="text-gray-300"></p>
               </div>
               <h2 class="mt-4 text-xl font-bold text-yellow-500">Suku Baduy</h2>
-              <p class="mb-4 px-4 text-gray-200"></p>
+              <p class="mb-4 px-4 text-gray-200">Traditional Culture</p>
             </div>
           </div>
           @endforelse
@@ -236,7 +248,14 @@
           @forelse($products as $product)
           <!-- Dynamic Product Item -->
           <div class="relative bg-white shadow rounded overflow-hidden">
-            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+            <!-- UBAH: Product Image BLOB -->
+            @if($product->mainImage())
+              <img src="{{ route('image.show', $product->mainImage()->id) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+            @else
+              <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+                <span class="text-gray-500">No Image</span>
+              </div>
+            @endif
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
               <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
                 <div class="w-3 h-3 border-2 border-white"></div>

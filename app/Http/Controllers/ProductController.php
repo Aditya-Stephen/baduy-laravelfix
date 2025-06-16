@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use App\Helpers\ImageHelper;
 
 class ProductController extends Controller
 {
@@ -20,20 +21,23 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $imageName = time().'.'.$request->image->extension();
-        $request->image->move(public_path('images/products'), $imageName);
-
-        Product::create([
+        $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            'image' => 'images/products/'.$imageName,
+            'created_by' => Auth::id(),
+            'updated_by' => Auth::id()
         ]);
 
-        return redirect()->route('admin')->with('success', 'Produk berhasil ditambahkan');
+        // Upload image ke BLOB
+        if ($request->hasFile('image')) {
+            ImageHelper::uploadImage($request->file('image'), $product, 'main');
+        }
+
+        return redirect()->back()->with('success', 'Product berhasil ditambahkan');
     }
 
     public function update(Request $request, Product $product)
@@ -42,40 +46,32 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $data = [
+        $product->update([
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-        ];
+            'updated_by' => Auth::id()
+        ]);
 
+        // Update image jika ada
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image && file_exists(public_path($product->image))) {
-                unlink(public_path($product->image));
-            }
-            
-            $imageName = time().'.'.$request->image->extension();
-            $request->image->move(public_path('images/products'), $imageName);
-            $data['image'] = 'images/products/'.$imageName;
+            ImageHelper::replaceImage($request->file('image'), $product, 'main');
         }
 
-        $product->update($data);
-
-        return redirect()->route('admin')->with('success', 'Produk berhasil diperbarui');
+        return redirect()->back()->with('success', 'Product berhasil diupdate');
     }
 
     public function destroy(Product $product)
     {
-        // Hapus gambar jika ada
-        if ($product->image && file_exists(public_path($product->image))) {
-            unlink(public_path($product->image));
-        }
+        // Hapus semua images terkait
+        $product->images()->delete();
         
+        // Hapus product
         $product->delete();
 
-        return redirect()->route('admin')->with('success', 'Produk berhasil dihapus');
+        return redirect()->back()->with('success', 'Product berhasil dihapus');
     }
 }
