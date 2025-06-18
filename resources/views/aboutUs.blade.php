@@ -113,26 +113,26 @@
           </p>
         </div>
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
+          <video width="100%" controls>
+            <source src="{{ asset('images/Sambutan Kepala Desa.mp4') }}" type="video/mp4">
+          </video>
         </div>
       </div>
     </section>
-
     <hr class="border-dashed-gray-600 mx-4 my-8">
-
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid md:grid-cols-2 gap-8 items-center">
         <div>
           <img src="{{ asset('images/petabaduy.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
-          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
-          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Konten</h1>
+          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Akses Baduy</h2>
+          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Maps</h1>
           <p class="italic text-gray-300 mb-4">
-            Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus. Sed a tellus quis mi rhoncus dignissim.
+            Access to the Baduy area, located in Lebak Regency, Banten, can be reached via several routes, but the journey to this village requires careful preparation. Generally, visitors will start their journey from Jakarta or Tangerang to Rangkasbitung, which can be reached by private vehicle or public transportation such as train or bus. From Rangkasbitung, the journey continues to Ciboleger, which is the gateway to Baduy Village. After that, visitors must walk through the path that has been provided to get to Baduy Village, with a travel duration of about 2 to 3 hours depending on physical and weather conditions. This path also requires visitors to follow customary rules and maintain a polite attitude while in this area.
           </p>
           <p class="text-gray-300 mb-6">
-            Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
+            Upon arriving at Baduy Village, visitors will be greeted with a very simple and traditional life. The Baduy community is very protective of their culture and nature, so access to the village is also limited to maintain a balance between cultural diversity and ecosystem sustainability. For those who want to plan a trip, here is a link to see the route and location on Google Maps which makes it easy to plan a visit to Baduy Village.
           </p>
           <a href="https://maps.app.goo.gl/CqS7iQtW6Xz6ptnA7" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block">Maps</a>
         </div>
