@@ -8,15 +8,24 @@ use Illuminate\Support\Facades\Auth;
 
 class ImageHelper
 {
+    // CONSTANTS untuk optimization
+    const MAX_WIDTH = 1920;
+    const MAX_HEIGHT = 1080;
+    const PROFILE_MAX_WIDTH = 400;
+    const PROFILE_MAX_HEIGHT = 400;
+    const JPEG_QUALITY = 85;
+    const WEBP_QUALITY = 80;
+    const MAX_FILE_SIZE = 25 * 1024 * 1024; 
+    const PROFILE_MAX_SIZE = 10 * 1024 * 1024; 
+
     public static function uploadImage(
         UploadedFile $file, 
         $model, 
         string $imageType = 'main', 
         int $order = 0
     ) {
-        // Validasi ukuran file - sangat ketat
-        if ($file->getSize() > 300 * 1024) { // Max 300KB
-            throw new \Exception('File terlalu besar. Maksimal 300KB.');
+        if ($file->getSize() > 25 * 1024 * 1024) { // Max 25MB
+            throw new \Exception('File terlalu besar. Maksimal 25MB.');
         }
         
         // Convert ke base64
