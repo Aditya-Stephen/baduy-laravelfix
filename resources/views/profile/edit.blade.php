@@ -269,7 +269,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <a href="{{ url('/artikel/'.$article->id) }}" class="text-blue-400 hover:text-blue-300 mr-3">View</a>
                                             @if($article->status !== 'approved')
-                                            <a href="{{ url('/artikel/'.$article->id.'/edit') }}" class="text-yellow-400 hover:text-yellow-300">Edit</a>
+                                            
                                             @endif
                                         </td>
                                     </tr>

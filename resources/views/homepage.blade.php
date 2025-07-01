@@ -207,7 +207,7 @@
           <p class="text-gray-300 mb-6">
             The Baduy community, with their rich cultural heritage and long-preserved traditions, seeks to introduce their local wisdom to a wider audience. Through broader promotion, they hope that their traditional values, handcrafted products such as weaving, weaving crafts, and natural goods can become more recognized and appreciated by the general public. This way, not only will their culture remain preserved, but it will also provide economic benefits for their community, opening new opportunities in trade while maintaining the principles of sustainability and environmental preservation that they deeply uphold.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/aboutUs') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</a>
         </div>
         <div>
           <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
@@ -220,18 +220,18 @@
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
+          <img src="{{ asset('images/suasana2.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
-          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
-          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Konten</h1>
+          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Article</h2>
+          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Suasana Bersama di Suku Baduy</h1>
           <p class="italic text-gray-300 mb-4">
-            Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus. Sed a tellus quis mi rhoncus dignissim.
+            Gambar ini menampilkan suasana kebersamaan masyarakat Baduy yang sedang berkumpul di area terbuka dengan suasana yang tenang dan alami. Mereka mengenakan pakaian adat khas Baduy, mencerminkan kekompakan dan kedekatan dengan tradisi.
           </p>
           <p class="text-gray-300 mb-6">
-            Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
+            Di sekitar mereka, terlihat lingkungan yang masih alami dan asri, dengan pepohonan yang tumbuh subur di sekeliling tempat mereka berkumpul. Jalan setapak yang terbuat dari batu besar memberikan kesan alami, menghubungkan rumah-rumah adat Baduy yang juga menggunakan bahan-bahan alami untuk konstruksinya. Lingkungan sekitar yang hijau dan alami menambah kehangatan dalam interaksi mereka, menggambarkan kehidupan sederhana namun penuh makna.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/artikel') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</a>
         </div>
       </div>
     </section>
@@ -250,11 +250,6 @@
               <span class="text-gray-500">No Image</span>
             </div>
             @endif
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
-                <div class="w-3 h-3 border-2 border-white"></div>
-              </div>
-            </div>
             <div class="bg-blue-600 text-center py-2">
               <p class="text-yellow-400 font-bold">{{ $product->name }}</p>
             </div>
