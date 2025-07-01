@@ -25,7 +25,7 @@
 
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-900 min-h-screen">
   <header class="header header_style_01 bg-gray-800 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
@@ -91,46 +91,44 @@
 
   <main class="flex-grow">
     <div class="bg-gray-900 py-[30px]">
-        <!-- Article Content -->
-        <div class="container mx-auto px-4">
-            <div class="flex flex-wrap">
-                <div class="w-full">
-                    <div class="p-0">
-                        @if($article->header_image)
-                            <div class="relative group overflow-hidden rounded-xl shadow-2xl mb-10 transition-all duration-500 hover:shadow-3xl hover:rounded-2xl">
-                                <!-- Image with parallax effect -->
-                                <div class="h-[400px] md:h-[500px] overflow-hidden">
-                                    <img src="{{ $article->header_image ? 'data:image/jpeg;base64,'.$article->header_image : ($article->header_image_path ? asset('storage/'.$article->header_image_path) : '') }}" 
-                                        alt="Header Image"
-                                        class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
-                                        style="object-position: center 35%;">
-                                </div>
-                                
-                                <!-- Overlay content remains the same -->
-                                <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
-                                    <div class="max-w-4xl text-yellow-400">
-                                        <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-                                            <span class="text-sm font-medium">Featured Article</span>
-                                        </div>
-                                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-shadow-lg break-words">
-                                            {{ $article->title }}
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                        <div class="flex flex-col">
-                            <div class="order-3">
-                                <p class="italic text-gray-300">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
-                                <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-gray-300 my-[30px] text-justify break-words overflow-hidden">
-                                    {!! $article->content !!}
-                                </div>
-                            </div>
+      <!-- Article Content -->
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap">
+          <div class="w-full">
+            <div class="p-0">
+              @if($article->header_image)
+                <div class="relative group overflow-hidden rounded-xl shadow-2xl mb-10 transition-all duration-500 hover:shadow-3xl hover:rounded-2xl">
+                  <!-- Image with parallax effect -->
+                    <div class="h-[400px] md:h-[500px] overflow-hidden">
+                      <img src="{{ $article->header_image ? 'data:image/jpeg;base64,'.$article->header_image : ($article->header_image_path ? asset('storage/'.$article->header_image_path) : '') }}" 
+                          alt="Header Image"
+                          class="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105"
+                          style="object-position: center 35%;">
+                    </div> 
+                    <!-- Overlay content remains the same -->
+                    <div class="flex flex-col justify-end h-full w-full bg-gradient-to-t from-black/70 via-black/30 to-transparent z-10 p-6 md:p-10">
+                      <div class="max-w-4xl text-yellow-400">
+                        <div class="inline-block px-4 py-2 mb-4 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+                          <span class="text-sm font-medium">Featured Article</span>
                         </div>
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-shadow-lg break-words">
+                            {{ $article->title }}
+                        </h1>
+                      </div>
                     </div>
                 </div>
+                @endif
+                <div class="flex flex-col">
+                  <div class="order-3">
+                    <p class="italic text-gray-300">Published by {{ $article->user->name }} on {{ $article->created_at->format('F j, Y') }}</p>
+                    <div class="leading-[1.8] text-[1.9rem] md:text-[1.2rem] text-gray-300 my-[30px] text-justify break-words overflow-hidden">
+                        {!! $article->content !!}
+                  </div>
+                </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
   </main>
     
