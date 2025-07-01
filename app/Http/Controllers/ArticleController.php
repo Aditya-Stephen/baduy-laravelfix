@@ -34,8 +34,8 @@ class ArticleController extends Controller
             'title' => 'required|max:255',
             'genre' => 'required|in:Budaya & Tradisi,Kearifan Lokal,Mitos & Kepercayaan,Lokasi',
             'content' => 'required',
-            'header_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024'
+            'header_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:25600',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:25600'
         ]);
 
         // Buat artikel

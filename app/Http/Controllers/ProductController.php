@@ -21,7 +21,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:25600'
         ]);
 
         $product = Product::create([
@@ -46,7 +46,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:25600'
         ]);
 
         $product->update([
