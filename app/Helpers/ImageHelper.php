@@ -16,7 +16,7 @@ class ImageHelper
     const JPEG_QUALITY = 85;
     const WEBP_QUALITY = 80;
     const MAX_FILE_SIZE = 25 * 1024 * 1024; 
-    const PROFILE_MAX_SIZE = 10 * 1024 * 1024; 
+    const PROFILE_MAX_SIZE = 25 * 1024 * 1024; 
 
     public static function uploadImage(
         UploadedFile $file, 

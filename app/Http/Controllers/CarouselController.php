@@ -21,7 +21,7 @@ class CarouselController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'order' => 'required|integer|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:25600'
         ]);
 
         $carousel = Carousel::create([
@@ -46,7 +46,7 @@ class CarouselController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'order' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:25600'
         ]);
 
         $carousel->update([
