@@ -23,7 +23,7 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-900">
   <header class="header header_style_01 bg-gray-800 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
@@ -137,7 +137,7 @@
 
     <!-- Article Content -->
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="prose max-w-none">
+      <div class="prose max-w-none text-justify break-words overflow-hidden">
         {!! $article->content !!}
       </div>
       
@@ -171,8 +171,44 @@
   </main>
 
   <footer class="bg-[#262828] text-white py-8 mt-16">
-    <div class="container mx-auto px-4 text-center">
-      <p>&copy; 2024 Suku Baduy. All rights reserved.</p>
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+
+        <!-- Left: Logo / Title -->
+        <div class="flex items-center space-x-4 text-center md:text-left">
+          <img src="{{ asset('images/logobadui1.webp') }}" alt="Baduy Logo" class="me-10 w-10 h-10 object-contain">
+          <div class="text-center md:text-left">
+            <h2 class="text-sm font-bold text-yellow-400">Suku Baduy</h2>
+            <p class="text-xs mt-1 text-gray-300">Preserving Culture. Promoting Tradition.</p>
+          </div>
+        </div>
+
+        <!-- Center: Navigation -->
+        <div class="space-x-4 text-sm">
+          <a href="{{ url('/') }}" class="hover:text-yellow-400 transition">Home</a>
+          <a href="{{ url('/aboutUs') }}" class="hover:text-yellow-400 transition">About</a>
+          <a href="{{ url('/marketplace') }}" class="hover:text-yellow-400 transition">Products</a>
+          <a href="{{ url('/artikel') }}" class="hover:text-yellow-400 transition">Article</a>
+        </div>
+
+        <!-- Right: Social Media -->
+        <div class="flex space-x-4">
+          <a href="#" class="hover:text-yellow-400 transition">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M22 4.01c-.77.34-1.6.56-2.46.66a4.26 4.26 0 0 0 1.88-2.36c-.83.49-1.74.85-2.7 1.04a4.24 4.24 0 0 0-7.22 3.87 12.01 12.01 0 0 1-8.73-4.43 4.25 4.25 0 0 0 1.31 5.67 4.21 4.21 0 0 1-1.92-.53v.05a4.25 4.25 0 0 0 3.4 4.17 4.28 4.28 0 0 1-1.91.07 4.25 4.25 0 0 0 3.97 2.95 8.5 8.5 0 0 1-5.28 1.82c-.34 0-.68-.02-1.01-.06a12.03 12.03 0 0 0 6.5 1.91c7.8 0 12.07-6.46 12.07-12.07 0-.18 0-.35-.01-.53A8.65 8.65 0 0 0 22 4.01z" />
+            </svg>
+          </a>
+          <a href="#" class="hover:text-yellow-400 transition">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2.04c-5.52 0-10 4.47-10 9.98 0 4.41 3.59 8.08 8.27 8.98v-6.36H7.9v-2.62h2.37V9.57c0-2.35 1.38-3.65 3.5-3.65 1.02 0 2.1.18 2.1.18v2.3h-1.18c-1.16 0-1.52.72-1.52 1.45v1.74h2.59l-.41 2.62h-2.18v6.36C18.41 20.1 22 16.43 22 11.98c0-5.5-4.48-9.97-10-9.97z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-700 mt-8 pt-4 text-center text-sm text-gray-400">
+        © Baduy Official. All rights reserved.
+      </div>
     </div>
   </footer>
 </body>
