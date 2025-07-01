@@ -185,7 +185,7 @@
           <div class="min-w-full flex-shrink-0 p-4">
             <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
               <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
-                <p class="text-gray-300"></p>
+                <p class="text-gray-300">No Carousel Available</p>
               </div>
               <h2 class="mt-4 text-xl font-bold text-yellow-500">Suku Baduy</h2>
               <p class="mb-4 px-4 text-gray-200">Traditional Culture</p>
@@ -193,14 +193,6 @@
           </div>
           @endforelse
         </div>
-
-        <!-- Buttons -->
-        <button id="prev" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-          &#8592;
-        </button>
-        <button id="next" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-          &#8594;
-        </button>
       </div>
     </div>
 
@@ -331,63 +323,73 @@
 
   <!-- JS FILES -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const button = document.getElementById('mobile-menu-button');
-      const menu = document.getElementById('navbar-menu');
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile menu functionality (sama seperti di atas)
+  const button = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('navbar-menu');
 
-      button.addEventListener('click', function() {
-        menu.classList.toggle('hidden');
-        menu.classList.toggle('flex');
-        menu.classList.toggle('flex-col');
-        menu.classList.toggle('absolute');
-        menu.classList.toggle('top-16');
-        menu.classList.toggle('right-0');
-        menu.classList.toggle('text-right');
-        menu.classList.toggle('bg-gray-800');
-        menu.classList.toggle('p-4');
-        menu.classList.toggle('rounded');
-        menu.classList.toggle('shadow-lg');
-        menu.classList.toggle('z-10');
+  if (button && menu) {
+    button.addEventListener('click', function() {
+      menu.classList.toggle('hidden');
+      menu.classList.toggle('flex');
+      menu.classList.toggle('flex-col');
+      menu.classList.toggle('absolute');
+      menu.classList.toggle('top-16');
+      menu.classList.toggle('right-0');
+      menu.classList.toggle('text-right');
+      menu.classList.toggle('bg-gray-800');
+      menu.classList.toggle('p-4');
+      menu.classList.toggle('rounded');
+      menu.classList.toggle('shadow-lg');
+      menu.classList.toggle('z-10');
 
-        // Tambahkan spacing untuk item menu mobile
-        const menuItems = menu.querySelectorAll('a');
-        menuItems.forEach(item => {
-          item.classList.toggle('block');
-          item.classList.toggle('mb-2');
-          item.classList.toggle('pl-2');
-        });
+      const menuItems = menu.querySelectorAll('a');
+      menuItems.forEach(item => {
+        item.classList.toggle('block');
+        item.classList.toggle('mb-2');
+        item.classList.toggle('pl-2');
       });
-
-      // Carousel functionality
-      const slides = document.getElementById('carousel-slides');
-      const prevBtn = document.getElementById('prev');
-      const nextBtn = document.getElementById('next');
-      const slideCount = slides.children.length;
-      let currentSlide = 0;
-
-      function updateSlidePosition() {
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-      }
-
-      if (prevBtn && nextBtn && slideCount > 0) {
-        prevBtn.addEventListener('click', function() {
-          currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-          updateSlidePosition();
-        });
-
-        nextBtn.addEventListener('click', function() {
-          currentSlide = (currentSlide + 1) % slideCount;
-          updateSlidePosition();
-        });
-
-        // Auto-advance slides every 5 seconds
-        setInterval(function() {
-          currentSlide = (currentSlide + 1) % slideCount;
-          updateSlidePosition();
-        }, 5000);
-      }
     });
-  </script>
+  }
+
+  // Auto-only Carousel with hover pause
+  const carousel = document.getElementById('carousel');
+  const slides = document.getElementById('carousel-slides');
+  const slideCount = slides ? slides.children.length : 0;
+  let currentSlide = 0;
+  let autoSlideInterval;
+
+  function updateSlidePosition() {
+    if (slides && slideCount > 0) {
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+  }
+
+  function startAutoSlide() {
+    if (slideCount > 1) {
+      autoSlideInterval = setInterval(function() {
+        currentSlide = (currentSlide + 1) % slideCount;
+        updateSlidePosition();
+      }, 5000);
+    }
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+    }
+  }
+
+  // Start auto-slide
+  startAutoSlide();
+
+  // Pause on hover (optional)
+  if (carousel && slideCount > 1) {
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
+  }
+});
+</script>
 
   @vite(['resources/js/app.js'])
 
