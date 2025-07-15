@@ -34,7 +34,7 @@
     x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
     :class="scrolled
     ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
-    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+    : 'bg-gray-800'"
     class="sticky top-0 z-50 transition-colors duration-300 py-2">
     <nav class="container mx-auto px-4">
       <div class="flex items-center justify-between">
@@ -79,9 +79,9 @@
               :aria-expanded="open.toString()">
               <!-- UBAH: Profile Image BLOB -->
               @if(Auth::user()->profileImage())
-                <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
               @else
-                <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
               @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

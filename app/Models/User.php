@@ -16,6 +16,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role', // JANGAN PERNAH DIHAPUS!
+        'profile_photo_path' // Tambahkan ini untuk konsistensi
     ];
 
     protected $hidden = [
@@ -61,7 +62,6 @@ class User extends Authenticatable
         return $this->role === $role;
     }
 
-    // Jika ada method role lain yang hilang, tambahkan di sini
     public function canAccessAdmin()
     {
         return in_array($this->role, ['admin', 'superadmin']);
@@ -73,7 +73,7 @@ class User extends Authenticatable
     }
 
     // =================================
-    // PROFILE IMAGE SYSTEM - TAMBAHAN BARU SAJA
+    // PROFILE IMAGE SYSTEM - PERBAIKAN
     // =================================
 
     public function images()
@@ -86,16 +86,38 @@ class User extends Authenticatable
         return $this->morphMany(Image::class, 'imageable')->where('image_type', 'profile');
     }
 
-    // Helper method untuk mendapatkan profile image
     public function profileImage()
     {
         return $this->profileImages()->first();
     }
 
-    // Helper method untuk default profile photo URL
+    /**
+     * Get the URL to the user's profile photo.
+     * Method ini akan menjadi sumber tunggal untuk profile photo URL
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        // Prioritas 1: Profile image dari relationship (jika ada)
+        if ($this->profileImage()) {
+            return route('image.show', $this->profileImage()->id);
+        }
+        
+        // Prioritas 2: profile_photo_path (jika ada)
+        if ($this->profile_photo_path) {
+            return filter_var($this->profile_photo_path, FILTER_VALIDATE_URL) 
+                ? $this->profile_photo_path 
+                : asset('storage/'.$this->profile_photo_path);
+        }
+        
+        // Fallback: Default avatar
+        return $this->defaultProfilePhotoUrl();
+    }
+
+    /**
+     * Generate default avatar URL
+     */
     public function defaultProfilePhotoUrl()
     {
-        // Generate default avatar berdasarkan nama
         $name = urlencode($this->name);
         return "https://ui-avatars.com/api/?name={$name}&color=7C3AED&background=EBF4FF&size=200";
     }

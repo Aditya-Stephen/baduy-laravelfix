@@ -12,16 +12,32 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         // Eager load relationships untuk menghindari N+1 query
-        $query = Article::with(['user', 'headerImages'])->approved()->latest();
+        $query = Article::with(['user', 'headerImages'])
+            ->approved()
+            ->latest();
         
-        if ($request->has('genre') && $request->genre) {
+        // Filter berdasarkan genre jika ada
+        if ($request->has('genre') && $request->genre !== 'all') {
             $query->where('genre', $request->genre);
+        }
+        
+        // Pencarian jika ada parameter search
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                  ->orWhere('content', 'like', '%'.$searchTerm.'%')
+                  ->orWhereHas('user', function($userQuery) use ($searchTerm) {
+                      $userQuery->where('name', 'like', '%'.$searchTerm.'%');
+                  });
+            });
         }
         
         $articles = $query->paginate(12);
         
         return view('artikel', compact('articles'));
     }
+
 
     public function create()
     {

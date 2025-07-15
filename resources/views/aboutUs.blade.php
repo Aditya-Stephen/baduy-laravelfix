@@ -20,84 +20,89 @@
 
 <body class="bg-gray-900">
   <header
-    x-data="{ scrolled: false, mobileMenuOpen: false }"
-    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
-    :class="scrolled
-    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
-    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
-    class="sticky top-0 z-50 transition-colors duration-300 py-2">
-    <nav class="container mx-auto px-4">
-      <div class="flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex-shrink-0">
-          <a href="{{ url('/') }}" class="flex items-center">
-            <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
-          </a>
-        </div>
+  x-data="{ scrolled: false, mobileMenuOpen: false }"
+  x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+  :class="scrolled
+  ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+  : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+  class="sticky top-0 z-50 transition-colors duration-300 py-2">
+  <nav class="container mx-auto px-4">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="{{ url('/') }}" class="flex items-center">
+          <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+        </a>
+      </div>
 
-        <!-- Hamburger menu -->
-        <div class="md:hidden">
+      <!-- Hamburger menu -->
+      <div class="md:hidden">
+        <button
+          type="button"
+          class="text-white hover:text-gray-300 focus:outline-none"
+          @click="mobileMenuOpen = !mobileMenuOpen"
+          aria-label="Toggle menu">
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Nav links -->
+      <div
+        :class="mobileMenuOpen
+        ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+        : 'hidden md:flex items-center space-x-6'"
+        class="md:flex">
+        <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+        <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+        <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+        <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
+
+        @auth
+        <div class="relative" x-data="{ open: false }">
           <button
-            type="button"
-            class="text-white hover:text-gray-300 focus:outline-none"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-            aria-label="Toggle menu">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            @click="open = !open"
+            class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+            :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+            aria-haspopup="true"
+            :aria-expanded="open.toString()">
+            <!-- UBAH: Profile Image BLOB -->
+            @if(Auth::user()->profileImage())
+            <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+            @else
+            <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+            @endif
+            {{ Auth::user()->name }}
+            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
           </button>
-        </div>
 
-        <!-- Nav links -->
-        <div
-          :class="mobileMenuOpen
-          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
-          : 'hidden md:flex items-center space-x-6'"
-          class="md:flex">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
-
-          @auth
-          <div class="relative" x-data="{ open: false }">
-            <button
-              @click="open = !open"
-              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
-              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
-              aria-haspopup="true"
-              :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
-              {{ Auth::user()->name }}
-              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-
-            <div
-              x-show="open"
-              @click.away="open = false"
-              x-transition
-              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
-              style="display: none;">
-              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
-                Edit Profile
-              </a>
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
-                  Logout
-                </button>
-              </form>
-            </div>
+          <div
+            x-show="open"
+            @click.away="open = false"
+            x-transition
+            class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+            style="display: none;">
+            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+              Edit Profile
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                Logout
+              </button>
+            </form>
           </div>
-          @else
-          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
-          @endauth
         </div>
+        @else
+        <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
+        @endauth
       </div>
-    </nav>
-  </header>
+    </div>
+  </nav>
+</header>
 
   <main class="flex-grow">
     <section class="max-w-7xl mx-auto px-4 py-12">
