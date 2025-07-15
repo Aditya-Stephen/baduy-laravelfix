@@ -2,98 +2,152 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Log;
 use App\Models\Article;
+use App\Helpers\ImageHelper;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function edit()
     {
-        // Get user articles for the articles section
-        $articles = Article::where('user_id', Auth::id())->latest()->get();
+        $user = Auth::user();
+        $articles = Article::where('user_id', $user->id)->latest()->get();
         
-        return view('profile.edit', [
-            'user' => $request->user(),
-            'articles' => $articles
-        ]);
+        return view('profile.edit', compact('user', 'articles'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request)
     {
-        $user = $request->user();
+        // Debug input
+        Log::info('=== PROFILE UPDATE START ===');
+        Log::info('User ID: ' . Auth::id());
+        Log::info('User Role: ' . Auth::user()->role);
+        Log::info('Request Name: ' . $request->name);
+        Log::info('Has cropped_photo: ' . ($request->filled('cropped_photo') ? 'YES' : 'NO'));
         
+        if ($request->filled('cropped_photo')) {
+            $croppedLength = strlen($request->cropped_photo);
+            Log::info('Cropped photo length: ' . $croppedLength);
+            Log::info('Cropped photo start: ' . substr($request->cropped_photo, 0, 50));
+        }
+
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => 'required|string|max:255',
+            'cropped_photo' => 'nullable|string',
         ]);
 
-        $user->name = $request->name;
+        $user = \App\Models\User::find(Auth::id());
         
-        // Handle profile photo from cropper
-        if ($request->filled('cropped_photo_data')) {
-            // Extract base64 image data (remove prefix like data:image/jpeg;base64,)
-            $imageData = $request->input('cropped_photo_data');
-            if (strpos($imageData, ';base64,') !== false) {
-                $imageData = explode(';base64,', $imageData)[1];
-            }
+        // Update nama user saja - JANGAN TOUCH ROLE!
+        $originalRole = $user->role;
+        $user->name = $request->name;
+        // EXPLICITLY PRESERVE ROLE
+        $user->role = $originalRole;
+        $user->save();
+        
+        Log::info('Name updated. Role preserved: ' . $user->fresh()->role);
+
+        // Handle profile photo upload
+        if ($request->filled('cropped_photo')) {
+            Log::info('Processing profile photo upload...');
             
-            // Store binary data directly in the database
-            $user->profile_photo_data = $imageData;
-            
-            // For backward compatibility, also store as a file
-            // (can be removed later when all views are updated)
             try {
-                // Delete old image if exists
-                if ($user->profile_photo_path) {
-                    Storage::disk('public')->delete($user->profile_photo_path);
+                $imageData = $request->cropped_photo;
+                
+                // Validate and clean base64 data
+                if (!$imageData || strlen($imageData) < 100) {
+                    throw new \Exception('Invalid or empty image data received');
                 }
                 
-                // Store new image
-                $decodedImage = base64_decode($imageData);
-                $filename = 'profile-photos/' . time() . '_' . $user->id . '.jpg';
-                Storage::disk('public')->put($filename, $decodedImage);
-                $user->profile_photo_path = $filename;
+                // Remove data:image/jpeg;base64, prefix if exists
+                if (strpos($imageData, 'data:image') === 0) {
+                    $commaPos = strpos($imageData, ',');
+                    if ($commaPos === false) {
+                        throw new \Exception('Invalid base64 format - no comma found');
+                    }
+                    $imageData = substr($imageData, $commaPos + 1);
+                }
+                
+                Log::info('Cleaned base64 length: ' . strlen($imageData));
+                
+                // Decode base64
+                $decodedImage = base64_decode($imageData, true);
+                if ($decodedImage === false) {
+                    throw new \Exception('Failed to decode base64 image data');
+                }
+                
+                Log::info('Decoded image size: ' . strlen($decodedImage) . ' bytes');
+                
+                // Create temp file
+                $tempDir = sys_get_temp_dir();
+                $tempFile = tempnam($tempDir, 'profile_' . $user->id . '_');
+                if (!$tempFile) {
+                    throw new \Exception('Cannot create temporary file in: ' . $tempDir);
+                }
+                
+                $bytesWritten = file_put_contents($tempFile, $decodedImage);
+                if ($bytesWritten === false || $bytesWritten === 0) {
+                    throw new \Exception('Cannot write decoded image to temp file');
+                }
+                
+                Log::info('Temp file created: ' . $tempFile . ' (' . $bytesWritten . ' bytes)');
+                
+                // Verify it's a valid image
+                $imageInfo = getimagesize($tempFile);
+                if ($imageInfo === false) {
+                    unlink($tempFile);
+                    throw new \Exception('Uploaded file is not a valid image');
+                }
+                
+                Log::info('Valid image detected: ' . $imageInfo['mime'] . ' (' . $imageInfo[0] . 'x' . $imageInfo[1] . ')');
+                
+                // Create UploadedFile instance
+                $uploadedFile = new \Illuminate\Http\UploadedFile(
+                    $tempFile,
+                    'profile_photo_' . $user->id . '.jpg',
+                    $imageInfo['mime'],
+                    null,
+                    true
+                );
+                
+                // Delete existing profile image FIRST
+                $existingProfileImage = $user->profileImage();
+                if ($existingProfileImage) {
+                    Log::info('Deleting existing profile image: ' . $existingProfileImage->id);
+                    $existingProfileImage->delete();
+                    Log::info('Existing profile image deleted');
+                }
+                
+                // Upload new profile image
+                Log::info('Uploading new profile image...');
+                $newImage = ImageHelper::uploadImage($uploadedFile, $user, 'profile');
+                Log::info('New profile image uploaded with ID: ' . $newImage->id);
+                
+                // Clean up temp file
+                if (file_exists($tempFile)) {
+                    unlink($tempFile);
+                    Log::info('Temp file cleaned up');
+                }
+                
+                // Verify the image was saved correctly
+                $verifyImage = $user->fresh()->profileImage();
+                if ($verifyImage) {
+                    Log::info('Profile image verified in database: ' . $verifyImage->id);
+                } else {
+                    Log::error('Profile image NOT found after upload!');
+                }
+                
             } catch (\Exception $e) {
-                // Log the error but continue - we'll still have the database version
-                Log::error('Failed to store profile photo: ' . $e->getMessage());
+                Log::error('Profile photo upload FAILED: ' . $e->getMessage());
+                Log::error('Stack trace: ' . $e->getTraceAsString());
+                
+                return back()->with('error', 'Gagal mengupload foto profil: ' . $e->getMessage());
             }
         }
 
-        $user->save();
-
-        return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        Log::info('=== PROFILE UPDATE COMPLETED ===');
+        return back()->with('success', 'Profile berhasil diperbarui!');
     }
 }

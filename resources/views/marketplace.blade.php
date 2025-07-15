@@ -60,7 +60,12 @@
               :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
               aria-haspopup="true"
               :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <!-- UBAH: Profile Image BLOB -->
+              @if(Auth::user()->profileImage())
+                <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @else
+                <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -103,7 +108,14 @@
       <section class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
         @forelse($products as $product)
         <div class="bg-gray-700 p-4 rounded-lg shadow-lg">
-          <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="rounded-lg w-full h-40 object-cover">
+          <!-- UBAH: Product Image BLOB -->
+          @if($product->mainImage())
+            <img src="{{ route('image.show', $product->mainImage()->id) }}" alt="{{ $product->name }}" class="rounded-lg w-full h-40 object-cover">
+          @else
+            <div class="rounded-lg w-full h-40 bg-gray-600 flex items-center justify-center">
+              <span class="text-gray-400">No Image</span>
+            </div>
+          @endif
           <h2 class="text-lg font-semibold mt-4">{{ $product->name }}</h2>
           <p class="text-gray-300">{{ Str::limit($product->description, 100) }}</p>
           <div class="mt-4 flex justify-between items-center">

@@ -20,84 +20,89 @@
 
 <body class="bg-gray-900">
   <header
-    x-data="{ scrolled: false, mobileMenuOpen: false }"
-    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
-    :class="scrolled
-    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
-    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
-    class="sticky top-0 z-50 transition-colors duration-300 py-2">
-    <nav class="container mx-auto px-4">
-      <div class="flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex-shrink-0">
-          <a href="{{ url('/') }}" class="flex items-center">
-            <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
-          </a>
-        </div>
+  x-data="{ scrolled: false, mobileMenuOpen: false }"
+  x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+  :class="scrolled
+  ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+  : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+  class="sticky top-0 z-50 transition-colors duration-300 py-2">
+  <nav class="container mx-auto px-4">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="{{ url('/') }}" class="flex items-center">
+          <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+        </a>
+      </div>
 
-        <!-- Hamburger menu -->
-        <div class="md:hidden">
+      <!-- Hamburger menu -->
+      <div class="md:hidden">
+        <button
+          type="button"
+          class="text-white hover:text-gray-300 focus:outline-none"
+          @click="mobileMenuOpen = !mobileMenuOpen"
+          aria-label="Toggle menu">
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Nav links -->
+      <div
+        :class="mobileMenuOpen
+        ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+        : 'hidden md:flex items-center space-x-6'"
+        class="md:flex">
+        <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+        <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+        <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+        <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
+
+        @auth
+        <div class="relative" x-data="{ open: false }">
           <button
-            type="button"
-            class="text-white hover:text-gray-300 focus:outline-none"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-            aria-label="Toggle menu">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            @click="open = !open"
+            class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+            :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+            aria-haspopup="true"
+            :aria-expanded="open.toString()">
+            <!-- UBAH: Profile Image BLOB -->
+            @if(Auth::user()->profileImage())
+            <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+            @else
+            <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+            @endif
+            {{ Auth::user()->name }}
+            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
             </svg>
           </button>
-        </div>
 
-        <!-- Nav links -->
-        <div
-          :class="mobileMenuOpen
-          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
-          : 'hidden md:flex items-center space-x-6'"
-          class="md:flex">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
-
-          @auth
-          <div class="relative" x-data="{ open: false }">
-            <button
-              @click="open = !open"
-              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
-              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
-              aria-haspopup="true"
-              :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
-              {{ Auth::user()->name }}
-              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-
-            <div
-              x-show="open"
-              @click.away="open = false"
-              x-transition
-              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
-              style="display: none;">
-              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
-                Edit Profile
-              </a>
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
-                  Logout
-                </button>
-              </form>
-            </div>
+          <div
+            x-show="open"
+            @click.away="open = false"
+            x-transition
+            class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+            style="display: none;">
+            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
+              Edit Profile
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                Logout
+              </button>
+            </form>
           </div>
-          @else
-          <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
-          @endauth
         </div>
+        @else
+        <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
+        @endauth
       </div>
-    </nav>
-  </header>
+    </div>
+  </nav>
+</header>
 
   <main class="flex-grow">
     <section class="max-w-7xl mx-auto px-4 py-12">
@@ -111,31 +116,30 @@
           <p class="text-gray-300 mb-6">
             The Baduy community, with their rich cultural heritage and long-preserved traditions, seeks to introduce their local wisdom to a wider audience. Through broader promotion, they hope that their traditional values, handcrafted products such as weaving, weaving crafts, and natural goods can become more recognized and appreciated by the general public. This way, not only will their culture remain preserved, but it will also provide economic benefits for their community, opening new opportunities in trade while maintaining the principles of sustainability and environmental preservation that they deeply uphold.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
         </div>
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
+          <video width="100%" controls>
+            <source src="{{ asset('images/Sambutan Kepala Desa.mp4') }}" type="video/mp4">
+          </video>
         </div>
       </div>
     </section>
-
     <hr class="border-dashed-gray-600 mx-4 my-8">
-
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
+          <img src="{{ asset('images/petabaduy.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
-          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
-          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Konten</h1>
+          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Akses Baduy</h2>
+          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Maps</h1>
           <p class="italic text-gray-300 mb-4">
-            Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus. Sed a tellus quis mi rhoncus dignissim.
+            Access to the Baduy area, located in Lebak Regency, Banten, can be reached via several routes, but the journey to this village requires careful preparation. Generally, visitors will start their journey from Jakarta or Tangerang to Rangkasbitung, which can be reached by private vehicle or public transportation such as train or bus. From Rangkasbitung, the journey continues to Ciboleger, which is the gateway to Baduy Village. After that, visitors must walk through the path that has been provided to get to Baduy Village, with a travel duration of about 2 to 3 hours depending on physical and weather conditions. This path also requires visitors to follow customary rules and maintain a polite attitude while in this area.
           </p>
           <p class="text-gray-300 mb-6">
-            Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
+            Upon arriving at Baduy Village, visitors will be greeted with a very simple and traditional life. The Baduy community is very protective of their culture and nature, so access to the village is also limited to maintain a balance between cultural diversity and ecosystem sustainability. For those who want to plan a trip, here is a link to see the route and location on Google Maps which makes it easy to plan a visit to Baduy Village.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="https://maps.app.goo.gl/CqS7iQtW6Xz6ptnA7" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded inline-block">Maps</a>
         </div>
       </div>
     </section>

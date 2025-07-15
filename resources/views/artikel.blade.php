@@ -26,126 +26,114 @@
 </head>
 
 <body class="bg-gray-900">
-  <header 
-    x-data="{ scrolled: false, mobileMenuOpen: false }"
-    x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
-    :class="scrolled
-    ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
-    : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
-    class="sticky top-0 z-50 transition-colors duration-300 py-2">
-    <nav class="container mx-auto px-4">
-      <div class="flex items-center justify-between">
-        <!-- Logo and Mobile Search -->
-        <div class="flex items-center space-x-4">
-          <!-- Logo -->
-          <div class="flex-shrink-0">
-            <a href="{{ url('/') }}" class="flex items-center">
-              <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
-            </a>
-          </div>
+  <header
+  x-data="{ scrolled: false, mobileMenuOpen: false }"
+  x-init="window.addEventListener('scroll', () => { scrolled = window.pageYOffset > 20 })"
+  :class="scrolled
+  ? 'bg-gray-800 bg-opacity-90 backdrop-blur-md shadow-md'
+  : 'bg-gray-800 bg-opacity-70 backdrop-blur-md'"
+  class="sticky top-0 z-50 transition-colors duration-300 py-2">
+  <nav class="container mx-auto px-4">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="{{ url('/') }}" class="flex items-center">
+          <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
+        </a>
+      </div>
 
-          <!-- Search Bar for Mobile (always visible) -->
-          <div class="md:hidden">
-            <form action="{{ url('/artikel') }}" method="GET" class="w-full" role="search">
-              <div class="relative flex items-center w-40">
-                <input type="search" name="search" placeholder="Cari..."
-                  class="w-full py-1 pl-3 pr-8 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                  required />
-                <button type="submit" class="absolute right-0 top-0 mt-1 mr-2 text-gray-400 hover:text-white">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
-                </button>
-              </div>
+      <!-- Search Bar (tengah) - Hanya pada layar medium ke atas -->
+      <div class="hidden md:flex flex-1 mx-8">
+        <form action="{{ url('/artikel') }}" method="GET" class="w-full max-w-xl" role="search">
+          <div class="relative flex items-center w-full">
+            <input id="search" type="search" name="search" placeholder="Cari artikel..." 
+                   class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500" required />
+            <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Hamburger menu -->
+      <div class="md:hidden">
+        <button
+          type="button"
+          class="text-white hover:text-gray-300 focus:outline-none"
+          @click="mobileMenuOpen = !mobileMenuOpen"
+          aria-label="Toggle menu">
+          <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Nav links -->
+      <div
+        :class="mobileMenuOpen
+        ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
+        : 'hidden md:flex items-center space-x-6'"
+        class="md:flex">
+        <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
+        <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
+        <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
+        <a href="{{ url('/artikel') }}" class="text-yellow-400 font-semibold" :class="{'block py-2': mobileMenuOpen}">Article</a>
+
+        @auth
+        <div class="relative" x-data="{ open: false }">
+          <button
+            @click="open = !open"
+            class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
+            :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
+            aria-haspopup="true"
+            :aria-expanded="open.toString()">
+            @if(Auth::user()->profileImage())
+              <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" 
+                   alt="Profile" class="w-8 h-8 rounded-full object-cover mr-2">
+            @else
+              <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" 
+                   alt="Default" class="w-8 h-8 rounded-full object-cover mr-2">
+            @endif
+            <span>{{ Auth::user()->name }}</span>
+            <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </button>
+
+          <div
+            x-show="open"
+            @click.away="open = false"
+            x-transition
+            class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
+            style="display: none;">
+            @if(Auth::user()->role === 'superadmin')
+              <a href="{{ route('superadmin.dashboard') }}" class="block px-4 py-2 text-white hover:bg-gray-600">Super Admin Dashboard</a>
+            @elseif(Auth::user()->role === 'admin')
+              <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-white hover:bg-gray-600">Admin Dashboard</a>
+            @endif
+            <a href="{{ route('artikel.create') }}" class="block px-4 py-2 text-white hover:bg-gray-600">Tulis Artikel</a>
+            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">Edit Profile</a>
+            <div class="border-t border-gray-600"></div>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
+                Logout
+              </button>
             </form>
           </div>
         </div>
-
-        <!-- Search Bar for Desktop -->
-        <div class="hidden md:flex flex-1 mx-8">
-          <form action="{{ url('/artikel') }}" method="GET" class="w-full max-w-xl" role="search">
-            <div class="relative flex items-center w-full">
-              <input id="search" type="search" name="search" placeholder="Cari artikel..."
-                class="w-full py-2 pl-4 pr-10 text-sm bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-                required />
-              <button type="submit" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 hover:text-white">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <!-- Hamburger menu -->
-        <div class="md:hidden">
-          <button
-            type="button"
-            class="text-white hover:text-gray-300 focus:outline-none"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-            aria-label="Toggle menu">
-            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-
-        <!-- Nav links -->
-        <div
-          :class="mobileMenuOpen
-          ? 'absolute top-16 right-4 bg-blue-900 bg-opacity-95 p-4 shadow-lg rounded-lg z-50 w-48 flex flex-col space-y-2'
-          : 'hidden md:flex items-center space-x-6'"
-          class="md:flex">
-          <a href="{{ url('/') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Home</a>
-          <a href="{{ url('/aboutUs') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">About Us</a>
-          <a href="{{ url('/marketplace') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Product</a>
-          <a href="{{ url('/artikel') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Article</a>
-
-          @auth
-          <div class="relative" x-data="{ open: false }">
-            <button
-              @click="open = !open"
-              class="flex items-center text-white hover:text-yellow-400 font-medium w-full"
-              :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
-              aria-haspopup="true"
-              :aria-expanded="open.toString()">
-              @if(Auth::user()->profile_photo_path)
-                  <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" class="w-8 h-8 rounded-full mr-2 object-cover">
-              @else
-                  <div class="w-8 h-8 rounded-full bg-gray-600 mr-2 flex items-center justify-center text-white">
-                      {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                  </div>
-              @endif
-              {{ Auth::user()->name }}
-              <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-              </svg>
-            </button>
-
-            <div
-              x-show="open"
-              @click.away="open = false"
-              x-transition
-              class="absolute right-0 mt-2 py-2 w-48 bg-gray-700 rounded-md shadow-lg z-10"
-              style="display: none;">
-              <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-white hover:bg-gray-600">
-                Edit Profile
-              </a>
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="block w-full text-left px-4 py-2 text-white hover:bg-gray-600">
-                  Logout
-                </button>
-              </form>
-            </div>
-          </div>
-          @else
+        @else
+        <div class="flex items-center space-x-4" :class="{'flex-col space-y-2 space-x-0': mobileMenuOpen}">
           <a href="{{ route('login') }}" class="text-white hover:text-yellow-400 font-medium" :class="{'block py-2': mobileMenuOpen}">Login</a>
-          @endauth
+          <a href="{{ route('register') }}" class="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-md transition-colors duration-300" :class="{'block w-full text-center': mobileMenuOpen}">Register</a>
         </div>
+        @endauth
       </div>
-    </nav>
-  </header>
+    </div>
+  </nav>
+</header>
 
   <main class="flex-grow"> <!-- mt-16 untuk memberi ruang header fixed -->
     <!-- Banner Area -->
@@ -213,22 +201,32 @@
                       
                       @foreach($categories as $key => $label)
                       <li class="flex-shrink-0">
-                          <a href="{{ route('artikel', ['genre' => $key]) }}" 
-                              class="relative block px-5 py-2.5 rounded-lg transition-all duration-300 group
-                                    @if(request('genre', 'all') == $key) 
-                                        bg-white text-blue-800 font-semibold shadow-lg
-                                    @else 
-                                        bg-white/20 text-white hover:bg-white/30
-                                    @endif">
-                              <span class="relative z-10 whitespace-nowrap">
-                                  {{ $label }}
-                              </span>
-                              
-                              <!-- Active indicator -->
-                              @if(request('genre') == $key || ($key == 'all' && !request('genre')))
-                              <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-yellow-300 rounded-t-md"></span>
-                              @endif
-                          </a>
+                          @if($key === 'all')
+                              <a href="{{ url('/artikel') }}" 
+                                  class="relative block px-5 py-2.5 rounded-lg transition-all duration-300 group
+                                      @if(!request('genre')) 
+                                          bg-white text-blue-800 font-semibold shadow-lg
+                                      @else 
+                                          bg-white/20 text-white hover:bg-white/30
+                                      @endif">
+                          @else
+                              <a href="{{ route('artikel', ['genre' => $key]) }}" 
+                                  class="relative block px-5 py-2.5 rounded-lg transition-all duration-300 group
+                                      @if(request('genre') == $key) 
+                                          bg-white text-blue-800 font-semibold shadow-lg
+                                      @else 
+                                          bg-white/20 text-white hover:bg-white/30
+                                      @endif">
+                          @endif
+                                  <span class="relative z-10 whitespace-nowrap">
+                                      {{ $label }}
+                                  </span>
+                                  
+                                  <!-- Active indicator -->
+                                  @if(($key === 'all' && !request('genre')) || request('genre') == $key)
+                                  <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-yellow-300 rounded-t-md"></span>
+                                  @endif
+                              </a>
                       </li>
                       @endforeach
                   </ul>
@@ -271,15 +269,14 @@
                         <article class="group relative flex flex-col md:flex-row gap-6 pb-12 border-b border-gray-700 hover:border-yellow-400 transition-colors duration-300">
                             <!-- Author Avatar -->
                             <div class="flex-shrink-0 relative">
-                                <div class="absolute -inset-2 bg-blue-900/30 rounded-2xl transform scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-0"></div>
-                                <img 
-                                    src="{{ $article->user->profile_photo_path ? (filter_var($article->user->profile_photo_path, FILTER_VALIDATE_URL) ? $article->user->profile_photo_path : asset('storage/'.$article->user->profile_photo_path)) : asset('images/user-profile.png') }}" 
-                                    alt="{{ $article->user->name }}" 
-                                    class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-gray-600 shadow-md hover:scale-110 hover:border-yellow-400 hover:shadow-lg transition-all duration-200 ease-out">
+                              <div class="absolute -inset-2 bg-blue-900/30 rounded-2xl transform scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 z-0"></div>
+                              <img 
+                                  src="{{ $article->user->profile_photo_url }}" 
+                                  alt="{{ $article->user->name }}" 
+                                  class="relative z-10 w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-gray-600 shadow-md hover:scale-110 hover:border-yellow-400 hover:shadow-lg transition-all duration-200 ease-out">
                             </div>
-
-                            <!-- Article Content -->
-                            <div class="flex-1 min-w-0">
+                             <!-- Article Content -->
+                              <div class="flex-1 min-w-0">
                                 <div class="flex items-center mb-2">
                                     <h3 class="text-xl font-semibold text-yellow-400 hover:text-yellow-300 transition-colors">
                                         {{ $article->user->name }}
@@ -301,8 +298,14 @@
                                 </h2>
 
                                 <p class="text-lg text-gray-300 mb-4 leading-relaxed text-justify hyphens-auto tracking-wide">
-                                    {{ Str::limit(strip_tags($article->content), 400) }}
-                                </p>                                
+                                    {!! Str::limit(
+                                        html_entity_decode(
+                                            strip_tags(
+                                                str_replace(['&nbsp;', '<br>', '<br/>'], ' ', $article->content)
+                                            ), 
+                                        ENT_QUOTES, 'UTF-8'), 
+                                    400) !!}
+                                </p>
 
                                 <a href="{{ route('artikel.show', $article->id) }}" class="inline-flex items-center text-yellow-400 hover:text-yellow-300 font-medium transition-colors">
                                     Baca lebih banyak
@@ -313,7 +316,7 @@
                             </div>
                         </article>
                         @endforeach
-                      </div>
+                    </div>
 
                       <!-- paginasi -->
                       @if($articles->hasPages())
@@ -336,7 +339,8 @@
                                           </svg>
                                       </span>
                                   @else
-                                      <a href="{{ $articles->previousPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->previousPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                        class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                                           </svg>
@@ -352,7 +356,8 @@
                                                   {{ $page }}
                                               </span>
                                           @else
-                                              <a href="{{ $url }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
+                                              <a href="{{ $url }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                                class="px-4 py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
                                                   {{ $page }}
                                               </a>
                                           @endif
@@ -361,7 +366,8 @@
 
                                   {{-- Next Page Link --}}
                                   @if($articles->hasMorePages())
-                                      <a href="{{ $articles->nextPageUrl() }}&genre={{ request('genre', 'all') }}" class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
+                                      <a href="{{ $articles->nextPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                        class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
                                           Selanjutnya
                                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

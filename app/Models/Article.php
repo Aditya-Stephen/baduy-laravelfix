@@ -2,71 +2,102 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    //
     use HasFactory;
 
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = null;
-
     protected $fillable = [
-        'user_id',
         'title',
-        'genre',
+        'genre', 
         'content',
-        'header_image',
-        'created_at'
+        'status',
+        'user_id',
+        'rejection_reason',
+        'approved_by',
+        'reviewed_by',
+        'approved_at',
+        'reviewed_at'
     ];
+
+    public $timestamps = true;
 
     protected $casts = [
         'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'reviewed_at' => 'datetime',
     ];
-
-    protected $appends = ['header_image_url'];
-
-    public function getHeaderImageUrlAttribute()
-    {
-        if (empty($this->header_image)) {
-            return null;
-        }
-
-        // Periksa jika sudah berupa base64 string
-        if (is_string($this->header_image) && base64_decode($this->header_image, true) !== false) {
-            return 'data:image/jpeg;base64,'.$this->header_image;
-        }
-
-        // Jika binary data, encode ke base64
-        return 'data:image/jpeg;base64,'.base64_encode($this->header_image);
-    }
-
-    protected $hidden = ['header_image'];
-
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    protected static function boot()
+    public function approvedBy()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->created_at)) {
-                $model->created_at = now();
-            }
-        });
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
-    public function getFormattedCreatedAtAttribute()
+    public function reviewedBy()
     {
-        return $this->created_at 
-            ? $this->created_at->format('F j, Y') 
-            : 'No date available';
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    // =================================
+    // SISTEM IMAGES - POLYMORPHIC RELATIONSHIP
+    // =================================
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    // PERBAIKI: Return relationship instance, bukan collection
+    public function headerImages()
+    {
+        return $this->morphMany(Image::class, 'imageable')->where('image_type', 'header');
+    }
+
+    public function galleryImages()
+    {
+        return $this->morphMany(Image::class, 'imageable')
+                    ->where('image_type', 'gallery')
+                    ->orderBy('order');
+    }
+
+    // Helper methods untuk mendapatkan single header image
+    public function getHeaderImageAttribute()
+    {
+        return $this->headerImages()->first();
+    }
+
+    // Helper method untuk cek apakah ada header image
+    public function headerImage()
+    {
+        return $this->headerImages()->first();
+    }
+
+    // Scopes
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
+    public function scopeByGenre($query, $genre)
+    {
+        return $query->where('genre', $genre);
     }
 }

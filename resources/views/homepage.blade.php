@@ -14,6 +14,8 @@
   <meta name="keywords" content="">
   <meta name="description" content="">
   <meta name="author" content="">
+  <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
+
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -67,7 +69,12 @@
               :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
               aria-haspopup="true"
               :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <!-- UBAH: Profile Image BLOB -->
+              @if(Auth::user()->profileImage())
+              <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @else
+              <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -156,13 +163,20 @@
 
   <main class="flex-grow">
     <div class="relative max-w-7xl mx-auto px-4 py-12">
-      <!-- Carousel dinamis -->
+      <!-- Carousel dinamis - UBAH BAGIAN INI -->
       <div id="carousel" class="overflow-hidden relative">
         <div id="carousel-slides" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0%)">
           @forelse($carousels as $carousel)
           <div class="min-w-full flex-shrink-0 p-4">
             <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
-              <img src="{{ asset($carousel->image) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+              <!-- UBAH: Carousel Image BLOB -->
+              @if($carousel->mainImage())
+              <img src="{{ route('image.show', $carousel->mainImage()->id) }}" alt="{{ $carousel->title }}" class="w-full h-64 object-cover">
+              @else
+              <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
+                <span class="text-gray-300">No Image</span>
+              </div>
+              @endif
               <h2 class="mt-4 text-xl font-bold text-yellow-500">{{ $carousel->title }}</h2>
               <p class="mb-4 px-4 text-gray-200">{{ $carousel->description }}</p>
             </div>
@@ -171,22 +185,14 @@
           <div class="min-w-full flex-shrink-0 p-4">
             <div class="bg-blue-900 rounded-lg overflow-hidden shadow-lg text-center text-black">
               <div class="w-full h-64 bg-gray-700 flex items-center justify-center">
-                <p class="text-gray-300"></p>
+                <p class="text-gray-300">No Carousel Available</p>
               </div>
               <h2 class="mt-4 text-xl font-bold text-yellow-500">Suku Baduy</h2>
-              <p class="mb-4 px-4 text-gray-200"></p>
+              <p class="mb-4 px-4 text-gray-200">Traditional Culture</p>
             </div>
           </div>
           @endforelse
         </div>
-
-        <!-- Buttons -->
-        <button id="prev" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-          &#8592;
-        </button>
-        <button id="next" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-800 hover:bg-blue-900 text-white px-3 py-2 rounded-full">
-          &#8594;
-        </button>
       </div>
     </div>
 
@@ -201,7 +207,7 @@
           <p class="text-gray-300 mb-6">
             The Baduy community, with their rich cultural heritage and long-preserved traditions, seeks to introduce their local wisdom to a wider audience. Through broader promotion, they hope that their traditional values, handcrafted products such as weaving, weaving crafts, and natural goods can become more recognized and appreciated by the general public. This way, not only will their culture remain preserved, but it will also provide economic benefits for their community, opening new opportunities in trade while maintaining the principles of sustainability and environmental preservation that they deeply uphold.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/aboutUs') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</a>
         </div>
         <div>
           <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Group" class="rounded-lg shadow-md">
@@ -214,18 +220,18 @@
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <img src="{{ asset('images/suasana1.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
+          <img src="{{ asset('images/suasana2.jpg') }}" alt="Baduy Village" class="rounded-lg shadow-md">
         </div>
         <div>
-          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Konten</h2>
-          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Konten</h1>
+          <h2 class="text-sm text-blue-300 uppercase font-semibold mb-2">Article</h2>
+          <h1 class="text-2xl text-yellow-400 font-bold mb-4">Suasana Bersama di Suku Baduy</h1>
           <p class="italic text-gray-300 mb-4">
-            Quisque eget nisl id nulla sagittis auctor quis id. Aliquam quis vehicula enim, non aliquam risus. Sed a tellus quis mi rhoncus dignissim.
+            Gambar ini menampilkan suasana kebersamaan masyarakat Baduy yang sedang berkumpul di area terbuka dengan suasana yang tenang dan alami. Mereka mengenakan pakaian adat khas Baduy, mencerminkan kekompakan dan kedekatan dengan tradisi.
           </p>
           <p class="text-gray-300 mb-6">
-            Integer rutrum ligula eu dignissim laoreet. Pellentesque venenatis nibh sed tellus faucibus bibendum. Sed fermentum est vitae rhoncus molestie. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae rutrum neque. Ut id erat sit amet libero bibendum aliquam. Donec ac egestas libero, eu bibendum risus. Phasellus et congue justo.
+            Di sekitar mereka, terlihat lingkungan yang masih alami dan asri, dengan pepohonan yang tumbuh subur di sekeliling tempat mereka berkumpul. Jalan setapak yang terbuat dari batu besar memberikan kesan alami, menghubungkan rumah-rumah adat Baduy yang juga menggunakan bahan-bahan alami untuk konstruksinya. Lingkungan sekitar yang hijau dan alami menambah kehangatan dalam interaksi mereka, menggambarkan kehidupan sederhana namun penuh makna.
           </p>
-          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</button>
+          <a href="{{ url('/artikel') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Learn More</a>
         </div>
       </div>
     </section>
@@ -236,12 +242,14 @@
           @forelse($products as $product)
           <!-- Dynamic Product Item -->
           <div class="relative bg-white shadow rounded overflow-hidden">
-            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div class="w-12 h-12 bg-blue-900 rounded-md flex items-center justify-center">
-                <div class="w-3 h-3 border-2 border-white"></div>
-              </div>
+            <!-- UBAH: Product Image BLOB -->
+            @if($product->mainImage())
+            <img src="{{ route('image.show', $product->mainImage()->id) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+            @else
+            <div class="w-full h-48 bg-gray-300 flex items-center justify-center">
+              <span class="text-gray-500">No Image</span>
             </div>
+            @endif
             <div class="bg-blue-600 text-center py-2">
               <p class="text-yellow-400 font-bold">{{ $product->name }}</p>
             </div>
@@ -310,63 +318,73 @@
 
   <!-- JS FILES -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const button = document.getElementById('mobile-menu-button');
-      const menu = document.getElementById('navbar-menu');
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile menu functionality (sama seperti di atas)
+  const button = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('navbar-menu');
 
-      button.addEventListener('click', function() {
-        menu.classList.toggle('hidden');
-        menu.classList.toggle('flex');
-        menu.classList.toggle('flex-col');
-        menu.classList.toggle('absolute');
-        menu.classList.toggle('top-16');
-        menu.classList.toggle('right-0');
-        menu.classList.toggle('text-right');
-        menu.classList.toggle('bg-gray-800');
-        menu.classList.toggle('p-4');
-        menu.classList.toggle('rounded');
-        menu.classList.toggle('shadow-lg');
-        menu.classList.toggle('z-10');
+  if (button && menu) {
+    button.addEventListener('click', function() {
+      menu.classList.toggle('hidden');
+      menu.classList.toggle('flex');
+      menu.classList.toggle('flex-col');
+      menu.classList.toggle('absolute');
+      menu.classList.toggle('top-16');
+      menu.classList.toggle('right-0');
+      menu.classList.toggle('text-right');
+      menu.classList.toggle('bg-gray-800');
+      menu.classList.toggle('p-4');
+      menu.classList.toggle('rounded');
+      menu.classList.toggle('shadow-lg');
+      menu.classList.toggle('z-10');
 
-        // Tambahkan spacing untuk item menu mobile
-        const menuItems = menu.querySelectorAll('a');
-        menuItems.forEach(item => {
-          item.classList.toggle('block');
-          item.classList.toggle('mb-2');
-          item.classList.toggle('pl-2');
-        });
+      const menuItems = menu.querySelectorAll('a');
+      menuItems.forEach(item => {
+        item.classList.toggle('block');
+        item.classList.toggle('mb-2');
+        item.classList.toggle('pl-2');
       });
-
-      // Carousel functionality
-      const slides = document.getElementById('carousel-slides');
-      const prevBtn = document.getElementById('prev');
-      const nextBtn = document.getElementById('next');
-      const slideCount = slides.children.length;
-      let currentSlide = 0;
-
-      function updateSlidePosition() {
-        slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-      }
-
-      if (prevBtn && nextBtn && slideCount > 0) {
-        prevBtn.addEventListener('click', function() {
-          currentSlide = (currentSlide - 1 + slideCount) % slideCount;
-          updateSlidePosition();
-        });
-
-        nextBtn.addEventListener('click', function() {
-          currentSlide = (currentSlide + 1) % slideCount;
-          updateSlidePosition();
-        });
-
-        // Auto-advance slides every 5 seconds
-        setInterval(function() {
-          currentSlide = (currentSlide + 1) % slideCount;
-          updateSlidePosition();
-        }, 5000);
-      }
     });
-  </script>
+  }
+
+  // Auto-only Carousel with hover pause
+  const carousel = document.getElementById('carousel');
+  const slides = document.getElementById('carousel-slides');
+  const slideCount = slides ? slides.children.length : 0;
+  let currentSlide = 0;
+  let autoSlideInterval;
+
+  function updateSlidePosition() {
+    if (slides && slideCount > 0) {
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+  }
+
+  function startAutoSlide() {
+    if (slideCount > 1) {
+      autoSlideInterval = setInterval(function() {
+        currentSlide = (currentSlide + 1) % slideCount;
+        updateSlidePosition();
+      }, 5000);
+    }
+  }
+
+  function stopAutoSlide() {
+    if (autoSlideInterval) {
+      clearInterval(autoSlideInterval);
+    }
+  }
+
+  // Start auto-slide
+  startAutoSlide();
+
+  // Pause on hover (optional)
+  if (carousel && slideCount > 1) {
+    carousel.addEventListener('mouseenter', stopAutoSlide);
+    carousel.addEventListener('mouseleave', startAutoSlide);
+  }
+});
+</script>
 
   @vite(['resources/js/app.js'])
 

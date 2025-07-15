@@ -5,22 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Product;
 use App\Models\Carousel;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AdminController extends Controller
+class SuperAdminController extends Controller
 {
     public function index()
     {
         $products = Product::with('images')->get();
         $carousels = Carousel::with('images')->orderBy('order')->get();
+        $users = User::all();
         
-        // Ambil artikel berdasarkan status
+        // Ambil artikel berdasarkan status - SAMA SEPERTI ADMIN
         $pendingArticles = Article::with('user')->where('status', 'pending')->latest()->get();
         $approvedArticles = Article::with('user')->where('status', 'approved')->latest()->get();
         $rejectedArticles = Article::with('user')->where('status', 'rejected')->latest()->get(); // TAMBAH INI
 
-        return view('admin', compact('products', 'carousels', 'pendingArticles', 'approvedArticles', 'rejectedArticles'));
+        return view('superadmin', compact('products', 'carousels', 'users', 'pendingArticles', 'approvedArticles', 'rejectedArticles'));
     }
 
     public function approveArticle($id)
@@ -61,5 +63,57 @@ class AdminController extends Controller
         return redirect()->back()
             ->with('article_success', 'Artikel berhasil ditolak!')
             ->with('active_article_tab', 'rejected');
+    }
+
+    // Method lainnya tetap sama...
+    public function promoteToAdmin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user->role === 'admin') {
+            return back()->with('error', 'User ini sudah menjadi admin.');
+        }
+
+        if ($user->role === 'superadmin') {
+            return back()->with('error', 'Tidak bisa mengubah role superadmin.');
+        }
+
+        $user->update(['role' => 'admin']);
+
+        return back()->with('admin_success', 'User berhasil dijadikan admin.');
+    }
+
+    public function demoteAdmin(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        $user = User::findOrFail($request->user_id);
+
+        if ($user->role === 'superadmin') {
+            return back()->with('error', 'Tidak bisa mengubah role superadmin.');
+        }
+
+        $user->update(['role' => 'user']);
+
+        return back()->with('admin_success', 'Admin berhasil diturunkan menjadi user.');
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->role === 'superadmin') {
+            return back()->with('error', 'Tidak bisa menghapus superadmin.');
+        }
+
+        $user->delete();
+
+        return back()->with('admin_success', 'User berhasil dihapus.');
     }
 }

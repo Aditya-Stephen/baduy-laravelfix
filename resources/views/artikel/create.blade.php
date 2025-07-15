@@ -78,7 +78,12 @@
               :class="mobileMenuOpen ? 'block py-2 text-left' : ''"
               aria-haspopup="true"
               :aria-expanded="open.toString()">
-              <img src="{{ Auth::user()->profile_photo_url }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              <!-- UBAH: Profile Image BLOB -->
+              @if(Auth::user()->profileImage())
+              <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @else
+              <img src="{{ Auth::user()->defaultProfilePhotoUrl() }}" alt="Profile Photo" class="w-8 h-8 rounded-full mr-2 object-cover">
+              @endif
               {{ Auth::user()->name }}
               <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -153,7 +158,21 @@
             <label class="block text-lg font-medium text-gray-700">Upload Gambar Header</label>
             <input type="file" id="header_image" name="header_image" accept="image/*"
               class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/30 transition-all">
-            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG. Maksimal 3MB</p>
+            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 2MB. Gambar akan dikompres otomatis.</p>
+            @error('header_image')
+                <p class="text-red-500 text-sm">{{ $message }}</p>
+            @enderror
+          </div>
+
+          <!-- Input Gallery Images -->
+          <div class="space-y-2">
+            <label class="block text-lg font-medium text-gray-700">Upload Gambar Gallery (Opsional)</label>
+            <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
+              class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/30 transition-all">
+            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 1MB per gambar. Gambar akan dikompres otomatis.</p>
+            @error('gallery_images.*')
+                <p class="text-red-500 text-sm">{{ $message }}</p>
+            @enderror
           </div>
 
           <!-- Input Konten -->

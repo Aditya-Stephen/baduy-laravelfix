@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Baduy</title>
+    <title>Super Admin Dashboard - Baduy</title>
     <link rel="shortcut icon" href="{{ asset('images/logobadui1.webp') }}" type="image/png" />
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -16,7 +16,7 @@
         <div class="container mx-auto flex justify-between items-center p-4">
             <div class="flex items-center space-x-4">
                 <img src="{{ asset('images/logobadui1.webp') }}" class="h-10 w-auto" alt="Baduy Logo">
-                <h1 class="text-xl font-bold">Admin Dashboard</h1>
+                <h1 class="text-xl font-bold">Super Admin Dashboard</h1>
             </div>
             <div class="flex items-center space-x-4">
                 <span>Selamat Datang, {{ Auth::user()->name }}</span>
@@ -30,7 +30,7 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content - SINKRONKAN x-data dengan admin -->
     <div class="container mx-auto px-4 py-8" x-data="{ 
         activeTab: '{{ session('active_tab', 'products') }}', 
         activeArticleTab: '{{ session('active_article_tab', 'pending') }}',
@@ -41,12 +41,13 @@
         showAddCarouselModal: false, 
         showEditCarouselModal: false, 
         editProductId: null, 
-        editCarouselId: null 
+        editCarouselId: null,
+        showAddAdminModal: false
     }">
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Sidebar -->
             <div class="w-full md:w-1/4 bg-white rounded-lg shadow p-4">
-                <h2 class="text-lg font-semibold mb-4 text-gray-800">Menu Admin</h2>
+                <h2 class="text-lg font-semibold mb-4 text-gray-800">Menu Super Admin</h2>
                 <nav>
                     <ul class="space-y-2">
                         <li>
@@ -73,6 +74,14 @@
                                 Kelola Artikel
                             </a>
                         </li>
+                        <li>
+                            <a href="#"
+                                class="block py-2 px-4 rounded"
+                                :class="{ 'bg-gray-800 text-white': activeTab === 'adminUsers', 'hover:bg-gray-200 text-gray-800': activeTab !== 'adminUsers' }"
+                                @click.prevent="activeTab = 'adminUsers'">
+                                Kelola Admin
+                            </a>
+                        </li>
 
                         <!-- divider -->
                         <li class="border-t border-gray-200 my-3 pt-3">
@@ -89,7 +98,7 @@
 
             <!-- Main Panel -->
             <div class="w-full md:w-3/4">
-                <!-- Products Tab -->
+                <!-- Products Tab - COPY EXACT DARI ADMIN -->
                 <div x-show="activeTab === 'products'">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
                         <div class="flex justify-between items-center mb-6">
@@ -102,13 +111,13 @@
                         </div>
 
                         <!-- Success product Message -->
-                        @if(session('success') && !session('article_success'))
+                        @if(session('success') && !session('article_success') && !session('admin_success'))
                         <div x-show="activeTab === 'products'" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
                             <p>{{ session('success') }}</p>
                         </div>
                         @endif
 
-                        <!-- Products Table -->
+                        <!-- Products Table - COPY EXACT DARI ADMIN -->
                         <div class="overflow-x-auto">
                             <table class="min-w-full bg-white border border-gray-200">
                                 <thead class="bg-gray-50">
@@ -128,12 +137,12 @@
                                         <td class="px-4 py-2 border">
                                             <!-- UBAH: Product Image BLOB -->
                                             @if($product->mainImage())
-                                                <img src="{{ route('image.show', $product->mainImage()->id) }}" 
-                                                     alt="{{ $product->name }}" class="h-16 w-16 object-cover mx-auto">
+                                            <img src="{{ route('image.show', $product->mainImage()->id) }}"
+                                                alt="{{ $product->name }}" class="h-16 w-16 object-cover mx-auto">
                                             @else
-                                                <div class="h-16 w-16 bg-gray-300 flex items-center justify-center mx-auto rounded">
-                                                    <span class="text-gray-500 text-xs">No Image</span>
-                                                </div>
+                                            <div class="h-16 w-16 bg-gray-300 flex items-center justify-center mx-auto rounded">
+                                                <span class="text-gray-500 text-xs">No Image</span>
+                                            </div>
                                             @endif
                                         </td>
                                         <td class="px-4 py-2 border">{{ $product->name }}</td>
@@ -143,7 +152,7 @@
                                             <div class="flex space-x-2 justify-center">
                                                 <button class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm edit-product-btn"
                                                     @click="showEditProductModal = true; editProductId = {{ $product->id }}; 
-                                                        document.getElementById('editProductForm').action = '{{ url('products') }}/{{ $product->id }}';
+                                                        document.getElementById('editProductForm').action = '{{ url('admin/products') }}/{{ $product->id }}';
                                                         document.getElementById('edit_name').value = '{{ $product->name }}';
                                                         document.getElementById('edit_description').value = '{{ $product->description }}';
                                                         document.getElementById('edit_price').value = '{{ $product->price }}';
@@ -176,7 +185,7 @@
                     </div>
                 </div>
 
-                <!-- Carousel Tab -->
+                <!-- Carousel Tab - COPY EXACT DARI ADMIN -->
                 <div x-show="activeTab === 'carousel'">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
                         <div class="flex justify-between items-center mb-6">
@@ -209,12 +218,12 @@
                                         <td class="px-4 py-2 border">
                                             <!-- UBAH: Carousel Image BLOB -->
                                             @if($carousel->mainImage())
-                                                <img src="{{ route('image.show', $carousel->mainImage()->id) }}" 
-                                                     alt="{{ $carousel->title }}" class="h-16 w-28 object-cover mx-auto">
+                                            <img src="{{ route('image.show', $carousel->mainImage()->id) }}"
+                                                alt="{{ $carousel->title }}" class="h-16 w-28 object-cover mx-auto">
                                             @else
-                                                <div class="h-16 w-28 bg-gray-300 flex items-center justify-center mx-auto rounded">
-                                                    <span class="text-gray-500 text-xs">No Image</span>
-                                                </div>
+                                            <div class="h-16 w-28 bg-gray-300 flex items-center justify-center mx-auto rounded">
+                                                <span class="text-gray-500 text-xs">No Image</span>
+                                            </div>
                                             @endif
                                         </td>
                                         <td class="px-4 py-2 border">{{ $carousel->title }}</td>
@@ -224,7 +233,7 @@
                                             <div class="flex space-x-2 justify-center">
                                                 <button class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm"
                                                     @click="showEditCarouselModal = true; editCarouselId = {{ $carousel->id }};
-                                                        document.getElementById('editCarouselForm').action = '{{ url('carousels') }}/{{ $carousel->id }}';
+                                                        document.getElementById('editCarouselForm').action = '{{ url('admin/carousels') }}/{{ $carousel->id }}';
                                                         document.getElementById('edit_carousel_title').value = '{{ $carousel->title }}';
                                                         document.getElementById('edit_carousel_description').value = '{{ $carousel->description }}';
                                                         document.getElementById('edit_order').value = '{{ $carousel->order }}';
@@ -257,7 +266,7 @@
                     </div>
                 </div>
 
-                <!-- Artikel tab - HAPUS x-data yang duplikat -->
+                <!-- Artikel tab - SINKRONKAN DENGAN ADMIN 3 TAB -->
                 <div x-show="activeTab === 'articles'">
                     <div class="bg-white rounded-lg shadow p-6 mb-6">
                         <!-- Notifikasi Artikel -->
@@ -271,7 +280,7 @@
                             <h2 class="text-xl font-bold text-gray-800">Kelola Artikel</h2>
                         </div>
 
-                        <!-- Tab Navigasi -->
+                        <!-- Tab Navigasi - TAMBAH TAB KETIGA -->
                         <div class="mb-6 border-b border-gray-200">
                             <ul class="flex flex-wrap -mb-px">
                                 <li class="mr-2">
@@ -339,16 +348,15 @@
                                                         class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
                                                         Lihat
                                                     </a>
-                                                    <form method="POST" action="{{ route('admin.articles.approve', $article->id) }}">
+                                                    <form method="POST" action="{{ route('superadmin.articles.approve', $article->id) }}">
                                                         @csrf
-                                                        <button type="submit" 
+                                                        <button type="submit"
                                                             onclick="return confirm('Apakah Anda yakin ingin menyetujui artikel ini?')"
                                                             class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
                                                             Setujui
                                                         </button>
                                                     </form>
-                                                    <!-- PERBAIKI TOMBOL REJECT -->
-                                                    <button @click="showRejectModal = true; rejectArticleId = {{ $article->id }}; console.log('Reject clicked for article:', {{ $article->id }})"
+                                                    <button @click="showRejectModal = true; rejectArticleId = {{ $article->id }}"
                                                         class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                                                         Tolak
                                                     </button>
@@ -362,7 +370,7 @@
                             @endif
                         </div>
 
-                        <!-- Tab Content - Approved Articles (tetap sama) -->
+                        <!-- Tab Content - Approved Articles -->
                         <div x-show="activeArticleTab === 'approved'" class="bg-white rounded-lg">
                             @if($approvedArticles->isEmpty())
                             <div class="text-center py-8 text-gray-500">
@@ -404,7 +412,7 @@
                             @endif
                         </div>
 
-                        <!-- Tab Content - Rejected Articles (tetap sama) -->
+                        <!-- Tab Content - Rejected Articles (BARU) -->
                         <div x-show="activeArticleTab === 'rejected'" class="bg-white rounded-lg">
                             @if($rejectedArticles->isEmpty())
                             <div class="text-center py-8 text-gray-500">
@@ -443,9 +451,9 @@
                                                         Lihat
                                                     </a>
                                                     <!-- Tombol untuk menyetujui artikel yang ditolak -->
-                                                    <form method="POST" action="{{ route('admin.articles.approve', $article->id) }}">
+                                                    <form method="POST" action="{{ route('superadmin.articles.approve', $article->id) }}">
                                                         @csrf
-                                                        <button type="submit" 
+                                                        <button type="submit"
                                                             onclick="return confirm('Apakah Anda yakin ingin menyetujui artikel yang sebelumnya ditolak ini?')"
                                                             class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm">
                                                             Setujui
@@ -463,28 +471,150 @@
                     </div>
                 </div>
 
-                <!-- Reject Modal - PINDAH KE LUAR DAN PERBAIKI -->
-                <div x-show="showRejectModal" 
-                     x-cloak
-                     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <!-- Admin Users Management Tab - TIDAK BERUBAH -->
+                <div x-show="activeTab === 'adminUsers'">
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <!-- Notifikasi Admin -->
+                        @if(session('admin_success'))
+                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
+                            <p>{{ session('admin_success') }}</p>
+                        </div>
+                        @endif
+
+                        @if(session('error'))
+                        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                            <p>{{ session('error') }}</p>
+                        </div>
+                        @endif
+
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-800">Kelola User & Admin</h2>
+                            <button type="button"
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+                                @click="showAddAdminModal = true">
+                                Tambah Admin Baru
+                            </button>
+                        </div>
+
+                        <!-- Admin Users Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white border border-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 border">Foto</th>
+                                        <th class="px-4 py-3 border">Nama</th>
+                                        <th class="px-4 py-3 border">Email</th>
+                                        <th class="px-4 py-3 border">Role</th>
+                                        <th class="px-4 py-3 border">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($users ?? [] as $user)
+                                    <tr>
+                                        <td class="px-4 py-3 border">
+                                            <div class="flex-shrink-0 h-10 w-10 mx-auto">
+                                                <img class="h-10 w-10 rounded-full object-cover"
+                                                    src="{{ $user->profile_photo_url }}"
+                                                    alt="{{ $user->name }}">
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 border">{{ $user->name }}</td>
+                                        <td class="px-4 py-3 border">{{ $user->email }}</td>
+                                        <td class="px-4 py-3 border">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {{ $user->role == 'admin' ? 'bg-purple-100 text-purple-800' : 
+                                                  ($user->role == 'superadmin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 border">
+                                            @if($user->role != 'superadmin')
+                                            <form method="POST" action="{{ route('roles.update', $user->id) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="flex items-center space-x-2 justify-center">
+                                                    <select name="role" class="border border-gray-300 rounded text-sm px-2 py-1 text-gray-700">
+                                                        <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
+                                                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                                    </select>
+                                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-sm">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            @else
+                                            <span class="text-xs text-gray-500 italic">Superadmin</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" class="px-4 py-3 text-center border">Belum ada data pengguna</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Admin Modal -->
+                <div x-show="showAddAdminModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div class="bg-white rounded-lg p-8 max-w-md w-full">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Tambah Admin Baru</h3>
+                            <button type="button" class="text-gray-600 hover:text-gray-800"
+                                @click="showAddAdminModal = false">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <form action="{{ route('roles.promote') }}" method="POST">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Pengguna:</label>
+                                <input type="email" id="email" name="email" placeholder="Masukkan email pengguna yang akan dijadikan admin"
+                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <p class="text-xs text-gray-500 mt-1">Pengguna harus sudah terdaftar dalam sistem</p>
+                            </div>
+
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showAddAdminModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                                    Jadikan Admin
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Reject Modal - SINKRONKAN DENGAN ADMIN -->
+                <div x-show="showRejectModal"
+                    x-cloak
+                    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Tolak Artikel</h3>
-                        <form method="POST" :action="`{{ url('admin/articles') }}/${rejectArticleId}/reject`">
+                        <form method="POST" :action="`{{ url('superadmin/articles') }}/${rejectArticleId}/reject`">
                             @csrf
                             <div class="mb-4">
                                 <label for="reason" class="block text-gray-700 text-sm font-bold mb-2">Alasan Penolakan:</label>
-                                <textarea id="reason" name="reason" rows="4" 
-                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                <textarea id="reason" name="reason" rows="4"
+                                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Masukkan alasan mengapa artikel ini ditolak..."
                                     required></textarea>
                             </div>
                             <div class="flex justify-end space-x-4">
-                                <button type="button" 
+                                <button type="button"
                                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                                     @click="showRejectModal = false; document.getElementById('reason').value = '';">
                                     Batal
                                 </button>
-                                <button type="submit" 
+                                <button type="submit"
                                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
                                     Tolak Artikel
                                 </button>
@@ -492,7 +622,6 @@
                         </form>
                     </div>
                 </div>
-
                 <!-- Add Product Modal - INPUT UNTUK BLOB -->
                 <div x-show="showAddProductModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
                     <div class="bg-white rounded-lg p-8 max-w-md w-full max-h-screen overflow-y-auto">
@@ -506,22 +635,22 @@
                             </button>
                         </div>
 
-                    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-4">
-                            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama Produk:</label>
-                            <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama Produk:</label>
+                                <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-                            <textarea id="description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-                        </div>
+                            <div class="mb-4">
+                                <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
+                                <textarea id="description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp):</label>
-                            <input type="number" id="price" name="price" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                            <div class="mb-4">
+                                <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp):</label>
+                                <input type="number" id="price" name="price" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
                             <div class="mb-4">
                                 <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Gambar Produk:</label>
@@ -529,18 +658,18 @@
                                 <p class="text-sm text-gray-500 mt-1">Gambar akan disimpan sebagai BLOB. Format: JPG, PNG, JPEG. Maksimal 2MB.</p>
                             </div>
 
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                                @click="showAddProductModal = false">
-                                Batal
-                            </button>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showAddProductModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                    Simpan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
                 <!-- Edit Product Modal - EDIT BLOB -->
                 <div x-show="showEditProductModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -555,23 +684,23 @@
                             </button>
                         </div>
 
-                    <form action="{{ url('products/1') }}" id="editProductForm" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-4">
-                            <label for="edit_name" class="block text-gray-700 text-sm font-bold mb-2">Nama Produk:</label>
-                            <input type="text" id="edit_name" name="name" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                        <form action="{{ url('products/1') }}" id="editProductForm" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-4">
+                                <label for="edit_name" class="block text-gray-700 text-sm font-bold mb-2">Nama Produk:</label>
+                                <input type="text" id="edit_name" name="name" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="edit_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-                            <textarea id="edit_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-                        </div>
+                            <div class="mb-4">
+                                <label for="edit_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
+                                <textarea id="edit_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="edit_price" class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp):</label>
-                            <input type="number" id="edit_price" name="price" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                            <div class="mb-4">
+                                <label for="edit_price" class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp):</label>
+                                <input type="number" id="edit_price" name="price" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Gambar Saat Ini (BLOB):</label>
@@ -581,18 +710,18 @@
                                 <p class="text-sm text-gray-500 mt-1">Gambar baru akan mengganti yang lama di database BLOB.</p>
                             </div>
 
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                                @click="showEditProductModal = false">
-                                Batal
-                            </button>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                Perbarui
-                            </button>
-                        </div>
-                    </form>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showEditProductModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                    Perbarui
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
                 <!-- Add Carousel Modal - INPUT UNTUK BLOB -->
                 <div x-show="showAddCarouselModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -607,22 +736,22 @@
                             </button>
                         </div>
 
-                    <form action="{{ route('carousels.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="mb-4">
-                            <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Judul Slide:</label>
-                            <input type="text" id="title" name="title" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                        <form action="{{ route('carousels.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="title" class="block text-gray-700 text-sm font-bold mb-2">Judul Slide:</label>
+                                <input type="text" id="title" name="title" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="carousel_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-                            <textarea id="carousel_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-                        </div>
+                            <div class="mb-4">
+                                <label for="carousel_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
+                                <textarea id="carousel_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="order" class="block text-gray-700 text-sm font-bold mb-2">Urutan:</label>
-                            <input type="number" id="order" name="order" min="1" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                            <div class="mb-4">
+                                <label for="order" class="block text-gray-700 text-sm font-bold mb-2">Urutan:</label>
+                                <input type="number" id="order" name="order" min="1" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
                             <div class="mb-4">
                                 <label for="carousel_image" class="block text-gray-700 text-sm font-bold mb-2">Gambar Slide:</label>
@@ -630,18 +759,18 @@
                                 <p class="text-sm text-gray-500 mt-1">Gambar akan disimpan sebagai BLOB. Format: JPG, PNG, JPEG. Maksimal 2MB.</p>
                             </div>
 
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                                @click="showAddCarouselModal = false">
-                                Batal
-                            </button>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showAddCarouselModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                    Simpan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
                 <!-- Edit Carousel Modal - EDIT BLOB -->
                 <div x-show="showEditCarouselModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -656,23 +785,23 @@
                             </button>
                         </div>
 
-                    <form action="{{ url('carousels/1') }}" id="editCarouselForm" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        <div class="mb-4">
-                            <label for="edit_carousel_title" class="block text-gray-700 text-sm font-bold mb-2">Judul Slide:</label>
-                            <input type="text" id="edit_carousel_title" name="title" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                        <form action="{{ url('carousels/1') }}" id="editCarouselForm" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+                            <div class="mb-4">
+                                <label for="edit_carousel_title" class="block text-gray-700 text-sm font-bold mb-2">Judul Slide:</label>
+                                <input type="text" id="edit_carousel_title" name="title" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="edit_carousel_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
-                            <textarea id="edit_carousel_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
-                        </div>
+                            <div class="mb-4">
+                                <label for="edit_carousel_description" class="block text-gray-700 text-sm font-bold mb-2">Deskripsi:</label>
+                                <textarea id="edit_carousel_description" name="description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                            </div>
 
-                        <div class="mb-4">
-                            <label for="edit_order" class="block text-gray-700 text-sm font-bold mb-2">Urutan:</label>
-                            <input type="number" id="edit_order" name="order" min="1" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        </div>
+                            <div class="mb-4">
+                                <label for="edit_order" class="block text-gray-700 text-sm font-bold mb-2">Urutan:</label>
+                                <input type="number" id="edit_order" name="order" min="1" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
 
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Gambar Saat Ini (BLOB):</label>
@@ -682,21 +811,21 @@
                                 <p class="text-sm text-gray-500 mt-1">Gambar baru akan mengganti yang lama di database BLOB.</p>
                             </div>
 
-                        <div class="flex justify-end space-x-4">
-                            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                                @click="showEditCarouselModal = false">
-                                Batal
-                            </button>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                                Perbarui
-                            </button>
-                        </div>
-                    </form>
+                            <div class="flex justify-end space-x-4">
+                                <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                    @click="showEditCarouselModal = false">
+                                    Batal
+                                </button>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                    Perbarui
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
 
+            </div>
         </div>
-    </div>
     </div>
 
     @vite(['resources/js/app.js'])

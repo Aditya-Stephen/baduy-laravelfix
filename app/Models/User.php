@@ -2,108 +2,123 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'profile_photo_path',
-        'profile_photo_data',
+        'role', // JANGAN PERNAH DIHAPUS!
+        'profile_photo_path' // Tambahkan ini untuk konsistensi
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
-        'profile_photo_data', // hide raw photo data in API response
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
-     */
-    protected $appends = [
-        'profile_photo_url',
-        'is_admin',
-    ];
-
-    /**
-     * Get the URL of the user's profile photo.
-     *
-     * @return string
-     */
-    public function getProfilePhotoUrlAttribute(): string
-    {
-        if ($this->profile_photo_data) {
-            // Return base64 encoded image data URI
-            return 'data:image/jpeg;base64,' . $this->profile_photo_data;
-        }
-
-        if ($this->profile_photo_path) {
-            // Return URL to stored file
-            return asset('storage/' . $this->profile_photo_path);
-        }
-
-        // Return default avatar URL if no photo available
-        return $this->defaultProfilePhotoUrl();
-    }
-
-    /**
-     * Get the default profile photo URL.
-     *
-     * @return string
-     */
-    protected function defaultProfilePhotoUrl(): string
-    {
-        $name = urlencode($this->name ?: 'User');
-        return "https://ui-avatars.com/api/?name={$name}&color=7F9CF5&background=EBF4FF";
-    }
-
-    /**
-     * User has many articles.
-     */
+    // =================================
+    // EXISTING RELATIONSHIPS - JANGAN DIHAPUS
+    // =================================
+    
     public function articles()
     {
         return $this->hasMany(Article::class);
     }
 
-    /**
-     * Determine if the user is admin.
-     *
-     * @return bool
-     */
-    public function getIsAdminAttribute(): bool
+    // =================================
+    // ROLE METHODS - RESTORE SEMUA METHOD YANG ADA SEBELUMNYA
+    // =================================
+    
+    public function isAdmin()
     {
-        // Example admin logic; update as needed
-        return $this->id === 1;
+        return $this->role === 'admin';
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'superadmin';
+    }
+
+    public function isUser()
+    {
+        return $this->role === 'user';
+    }
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    public function canAccessAdmin()
+    {
+        return in_array($this->role, ['admin', 'superadmin']);
+    }
+
+    public function getRoleAttribute($value)
+    {
+        return $value ?? 'user'; // Default role
+    }
+
+    // =================================
+    // PROFILE IMAGE SYSTEM - PERBAIKAN
+    // =================================
+
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
+
+    public function profileImages()
+    {
+        return $this->morphMany(Image::class, 'imageable')->where('image_type', 'profile');
+    }
+
+    public function profileImage()
+    {
+        return $this->profileImages()->first();
+    }
+
+    /**
+     * Get the URL to the user's profile photo.
+     * Method ini akan menjadi sumber tunggal untuk profile photo URL
+     */
+    public function getProfilePhotoUrlAttribute()
+    {
+        // Prioritas 1: Profile image dari relationship (jika ada)
+        if ($this->profileImage()) {
+            return route('image.show', $this->profileImage()->id);
+        }
+        
+        // Prioritas 2: profile_photo_path (jika ada)
+        if ($this->profile_photo_path) {
+            return filter_var($this->profile_photo_path, FILTER_VALIDATE_URL) 
+                ? $this->profile_photo_path 
+                : asset('storage/'.$this->profile_photo_path);
+        }
+        
+        // Fallback: Default avatar
+        return $this->defaultProfilePhotoUrl();
+    }
+
+    /**
+     * Generate default avatar URL
+     */
+    public function defaultProfilePhotoUrl()
+    {
+        $name = urlencode($this->name);
+        return "https://ui-avatars.com/api/?name={$name}&color=7C3AED&background=EBF4FF&size=200";
     }
 }
