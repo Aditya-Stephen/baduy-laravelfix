@@ -159,7 +159,7 @@
                                     Choose New Photo
                                 </button>
                                 <input type="file" id="profile_photo" @change="fileChosen" class="hidden" accept="image/*">
-                                <p class="text-sm text-gray-400 mt-2">Photo will be uploaded as BLOB and cropped to 3:4 ratio</p>
+                                <p class="text-sm text-gray-400 mt-2">Photo will be uploaded and cropped to 3:4 ratio</p>
 
                                 <!-- Preview of cropped image -->
                                 <div x-show="croppedPreview" class="mt-4 w-32 aspect-[3/4]">
@@ -172,7 +172,7 @@
                             <div class="md:col-span-2">
                                 <div class="mb-6">
                                     <label class="block text-gray-300 text-sm font-medium mb-2" for="name">
-                                        Full Name
+                                        Username
                                     </label>
                                     <input class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         id="name" name="name" type="text"
@@ -181,18 +181,18 @@
 
                                 <div class="mb-6">
                                     <label class="block text-gray-300 text-sm font-medium mb-2" for="email">
-                                        Email Address
+                                        Email
                                     </label>
                                     <input class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-3 text-gray-300 focus:outline-none"
                                         id="email" type="email"
                                         value="{{ auth()->user()->email }}" disabled>
-                                    <p class="text-xs text-gray-400 mt-2">Email cannot be changed</p>
+                                    <p class="text-xs text-gray-400 mt-2">Email tidak bisa diubah</p>
                                 </div>
 
                                 <div class="flex justify-end">
                                     <button type="submit"
                                         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded font-semibold transition">
-                                        Update Profile
+                                        Ubah Profile
                                     </button>
                                 </div>
                             </div>
@@ -203,12 +203,12 @@
                 <!-- Your Articles Section -->
                 <div class="mt-10 bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700">
                     <div class="bg-blue-900 p-4 flex justify-between items-center">
-                        <h2 class="text-xl font-bold text-yellow-400">Your Articles</h2>
+                        <h2 class="px-2 text-xl font-bold text-yellow-400">Your Articles</h2>
                         <a href="{{ url('/artikel/create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
                             </svg>
-                            New Article
+                            Artikel Baru
                         </a>
                     </div>
 
@@ -218,9 +218,9 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1M19 20a2 2 0 002-2V8m-2 12h-7a2 2 0 01-2-2v-4m11 0a1 1 0 001-1v-1a1 1 0 00-1-1h-1M8 12H6a1 1 0 01-1-1V9a1 1 0 011-1h2" />
                             </svg>
-                            <p class="text-gray-400 text-lg">You haven't submitted any articles yet.</p>
+                            <p class="text-gray-400 text-lg">Kamu belum punya artikel.</p>
                             <a href="{{ url('/artikel/create') }}" class="mt-4 inline-block text-blue-400 hover:text-blue-300">
-                                Write your first article → 
+                                Tulis artikel pertamamu → 
                             </a>
                         </div>
                         @else
@@ -229,16 +229,16 @@
                                 <thead>
                                     <tr>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                            Title
+                                            Judul Artikel
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                                             Status
                                         </th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                            Date
+                                            Tanggal
                                         </th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
-                                            Actions
+                                        <th class="px-9 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                            Aksi
                                         </th>
                                     </tr>
                                 </thead>
@@ -251,7 +251,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($article->status === 'approved')
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Approved
+                                                Disetujui
                                             </span>
                                             @elseif($article->status === 'pending')
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
@@ -259,7 +259,7 @@
                                             </span>
                                             @else
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                                Rejected
+                                                Ditolak
                                             </span>
                                             @endif
                                         </td>
@@ -267,7 +267,7 @@
                                             {{ $article->created_at->format('M d, Y') }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a href="{{ url('/artikel/'.$article->id) }}" class="text-blue-400 hover:text-blue-300 mr-3">View</a>
+                                            <a href="{{ url('/artikel/'.$article->id) }}" class="text-blue-400 hover:text-blue-300 mr-3">Lihat</a>
                                             @if($article->status !== 'approved')
                                             
                                             @endif
@@ -276,7 +276,7 @@
                                     @if($article->status === 'rejected' && $article->rejection_reason)
                                     <tr class="bg-gray-900/50">
                                         <td colspan="4" class="px-6 py-2 text-xs text-red-400 italic">
-                                            <strong>Rejection reason:</strong> {{ $article->rejection_reason }}
+                                            <strong>Alasan penolakan:</strong> {{ $article->rejection_reason }}
                                         </td>
                                     </tr>
                                     @endif
