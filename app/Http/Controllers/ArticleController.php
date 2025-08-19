@@ -34,6 +34,7 @@ class ArticleController extends Controller
         }
         
         $articles = $query->paginate(12);
+        // paginasi untuk seberapa banyak artikel yang dimunculin dalam 1 page
         
         return view('artikel', compact('articles'));
     }
