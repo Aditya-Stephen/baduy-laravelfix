@@ -141,7 +141,7 @@
                             <div class="md:col-span-1 flex flex-col items-center">
                                 <!-- Current photo or placeholder -->
                                 <div class="mb-4 w-40">
-                                  <!-- UBAH: Current Profile Image BLOB -->
+                                  <!-- UBAH: Current Profile Image -->
                                   @if(Auth::user()->profileImage())
                                     <img src="{{ route('image.show', Auth::user()->profileImage()->id) }}"
                                         class="w-full h-auto aspect-[3/4] rounded-lg border-2 border-yellow-400 object-cover">

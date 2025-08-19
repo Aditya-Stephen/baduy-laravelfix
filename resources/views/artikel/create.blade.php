@@ -155,10 +155,10 @@
 
           <!-- Input Gambar Header -->
           <div class="space-y-2">
-            <label class="block text-lg font-medium text-gray-700">Upload Gambar Header</label>
+            <label class="block text-lg font-medium text-gray-700">Upload Gambar Utama</label>
             <input type="file" id="header_image" name="header_image" accept="image/*"
               class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/30 transition-all">
-            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 2MB. Gambar akan dikompres otomatis.</p>
+            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 2MB.</p>
             @error('header_image')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
             @enderror
@@ -166,10 +166,10 @@
 
           <!-- Input Gallery Images -->
           <div class="space-y-2">
-            <label class="block text-lg font-medium text-gray-700">Upload Gambar Gallery (Opsional)</label>
+            <label class="block text-lg font-medium text-gray-700">Upload Gambar Extra (Opsional)</label>
             <input type="file" id="gallery_images" name="gallery_images[]" accept="image/*" multiple
               class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl text-lg focus:border-[#4CAF50] focus:ring-2 focus:ring-[#4CAF50]/30 transition-all">
-            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 1MB per gambar. Gambar akan dikompres otomatis.</p>
+            <p class="text-sm text-gray-500 mt-1">Format: JPG, PNG, JPEG, WEBP. Maksimal 2MB.</p>
             @error('gallery_images.*')
                 <p class="text-red-500 text-sm">{{ $message }}</p>
             @enderror

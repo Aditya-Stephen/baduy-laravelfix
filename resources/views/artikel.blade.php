@@ -38,7 +38,7 @@
       <div class="flex items-center justify-between">
         <!-- Logo -->
         <div class="flex-shrink-0">
-          <a href="{{ url('/') }}" class="flex items-center">
+          <a href="{{ url('/artikel') }}" class="flex items-center">
             <img src="{{ asset('images/logobadui1.webp') }}" class="h-12 w-auto object-contain" alt="Baduy Logo">
           </a>
         </div>
@@ -411,67 +411,99 @@
                       <!-- paginasi -->
                       @if($articles->hasPages())
                       <div class="mt-16">
-                          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                              <!-- Info halaman -->
-                              <div class="text-base text-gray-300">
-                                  Menampilkan <span class="font-semibold text-yellow-300">{{ $articles->firstItem() }}</span> - 
-                                  <span class="font-semibold text-yellow-300">{{ $articles->lastItem() }}</span> dari 
-                                  <span class="font-semibold text-yellow-300">{{ $articles->total() }}</span> artikel
-                              </div>
-                              
-                              <!-- Navigasi halaman -->
-                              <nav class="flex items-center space-x-4">
-                                  {{-- Previous Page Link --}}
-                                  @if($articles->onFirstPage())
-                                      <span class="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                          </svg>
-                                      </span>
-                                  @else
-                                      <a href="{{ $articles->previousPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
-                                        class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                          </svg>
-                                          Sebelumnya
-                                      </a>
-                                  @endif
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <!-- Info halaman -->
+                            <div class="text-base text-gray-300 w-full sm:w-auto text-center sm:text-left mb-4 sm:mb-0">
+                                Menampilkan <span class="font-semibold text-yellow-300">{{ $articles->firstItem() }}</span> - 
+                                <span class="font-semibold text-yellow-300">{{ $articles->lastItem() }}</span> dari 
+                                <span class="font-semibold text-yellow-300">{{ $articles->total() }}</span> artikel
+                            </div>
+                            
+                            <!-- Navigasi halaman -->
+                            <nav class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                                <div class="flex items-center justify-center sm:justify-start w-full sm:w-auto space-x-2 sm:space-x-4">
+                                    {{-- Previous Page Link --}}
+                                    @if($articles->onFirstPage())
+                                        <span class="px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                        </span>
+                                    @else
+                                        <a href="{{ $articles->previousPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                          class="px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                            </svg>
+                                            <span class="hidden sm:inline">Sebelumnya</span>
+                                        </a>
+                                    @endif
 
-                                  {{-- Pagination Elements --}}
-                                  <div class="flex space-x-3">
-                                      @foreach($articles->getUrlRange(1, $articles->lastPage()) as $page => $url)
-                                          @if($page == $articles->currentPage())
-                                              <span class="px-4 py-2 bg-yellow-400 text-gray-900 rounded-lg border border-yellow-400 font-medium">
-                                                  {{ $page }}
-                                              </span>
-                                          @else
-                                              <a href="{{ $url }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
-                                                class="px-4 py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
-                                                  {{ $page }}
-                                              </a>
-                                          @endif
-                                      @endforeach
-                                  </div>
+                                    {{-- Pagination Elements --}}
+                                    <div class="flex items-center space-x-2 sm:space-x-3">
+                                        @php
+                                            // Logika untuk membatasi jumlah tombol halaman
+                                            $start = max($articles->currentPage() - 2, 1);
+                                            $end = min($start + 4, $articles->lastPage());
+                                            
+                                            if($end - $start < 4 && $start > 1) {
+                                                $start = max($end - 4, 1);
+                                            }
+                                        @endphp
 
-                                  {{-- Next Page Link --}}
-                                  @if($articles->hasMorePages())
-                                      <a href="{{ $articles->nextPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
-                                        class="px-4 py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
-                                          Selanjutnya
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                          </svg>
-                                      </a>
-                                  @else
-                                      <span class="px-4 py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                          </svg>
-                                      </span>
-                                  @endif
-                              </nav>
-                          </div>
+                                        @if($start > 1)
+                                            <a href="{{ $articles->url(1) }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                              class="px-3 py-1 sm:px-4 sm:py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
+                                                1
+                                            </a>
+                                            @if($start > 2)
+                                                <span class="px-2 py-1 text-gray-400">...</span>
+                                            @endif
+                                        @endif
+
+                                        @foreach($articles->getUrlRange($start, $end) as $page => $url)
+                                            @if($page == $articles->currentPage())
+                                                <span class="px-3 py-1 sm:px-4 sm:py-2 bg-yellow-400 text-gray-900 rounded-lg border border-yellow-400 font-medium">
+                                                    {{ $page }}
+                                                </span>
+                                            @else
+                                                <a href="{{ $url }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                                  class="px-3 py-1 sm:px-4 sm:py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
+                                                    {{ $page }}
+                                                </a>
+                                            @endif
+                                        @endforeach
+
+                                        @if($end < $articles->lastPage())
+                                            @if($end < $articles->lastPage() - 1)
+                                                <span class="px-2 py-1 text-gray-400">...</span>
+                                            @endif
+                                            <a href="{{ $articles->url($articles->lastPage()) }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                              class="px-3 py-1 sm:px-4 sm:py-2 text-yellow-400 hover:bg-yellow-400/10 rounded-lg border border-yellow-400/50 hover:border-yellow-300 transition-all duration-200">
+                                                {{ $articles->lastPage() }}
+                                            </a>
+                                        @endif
+                                    </div>
+
+                                    {{-- Next Page Link --}}
+                                    @if($articles->hasMorePages())
+                                        <a href="{{ $articles->nextPageUrl() }}@if(request('genre'))&genre={{ request('genre', 'all') }}@endif @if(request('search'))&search={{ request('search') }}@endif" 
+                                          class="px-3 py-2 sm:px-4 sm:py-2 rounded-lg border border-yellow-400 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-300 transition-all duration-200 flex items-center">
+                                            <span class="hidden sm:inline">Selanjutnya</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </a>
+                                    @else
+                                        <span class="px-3 py-2 sm:px-4 sm:py-2 rounded-lg text-gray-500 cursor-not-allowed border border-gray-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                            </svg>
+                                        </span>
+                                    @endif
+                                </div>
+                            </nav>
+                        </div>
                       </div>
                       @endif
                   </div>

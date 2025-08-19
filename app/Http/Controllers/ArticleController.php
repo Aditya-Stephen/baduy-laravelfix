@@ -11,17 +11,17 @@ class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        // Eager load relationships untuk menghindari N+1 query
+        // nampilin artikel yang udah di approve beserta pfp user
         $query = Article::with(['user', 'headerImages'])
             ->approved()
             ->latest();
         
-        // Filter berdasarkan genre jika ada
+        // Filter berdasarkan genre kalo ada
         if ($request->has('genre') && $request->genre !== 'all') {
             $query->where('genre', $request->genre);
         }
         
-        // Pencarian jika ada parameter search
+        // Pencarian jika ada artikel yang di search
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
@@ -38,12 +38,13 @@ class ArticleController extends Controller
         return view('artikel', compact('articles'));
     }
 
-
+    // validasi pembuatan artikel bagi user
     public function create()
     {
         return view('artikel.create');
     }
 
+    // validasi artikel ke database
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -64,12 +65,12 @@ class ArticleController extends Controller
         ]);
 
         try {
-            // Upload header image ke BLOB jika ada
+            // Upload header image
             if ($request->hasFile('header_image')) {
                 ImageHelper::uploadImage($request->file('header_image'), $article, 'header');
             }
 
-            // Upload gallery images ke BLOB jika ada
+            // Upload gambar extra jika ada
             if ($request->hasFile('gallery_images')) {
                 ImageHelper::uploadMultipleImages($request->file('gallery_images'), $article, 'gallery');
             }
@@ -80,9 +81,7 @@ class ArticleController extends Controller
         return redirect()->route('artikel')->with('success', 'Artikel berhasil diajukan untuk review!');
     }
 
-    /**
-     * SHOW METHOD SEDERHANA - TANPA MODE ADMIN PREVIEW
-     */
+ 
     public function show($id)
     {
         // Eager load semua relationships yang diperlukan
